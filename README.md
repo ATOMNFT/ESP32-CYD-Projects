@@ -2,12 +2,6 @@
 
 <br>
 
-<div align="center">
-  
-# CYD Project Repo
-
-</div>
-
 <b>Sample projects for the esp32 cheap yellow display.</b>
 <br>
 <b>To use arduino IDE with the CYD you must adjust and add a few things to it's enviroment. 
