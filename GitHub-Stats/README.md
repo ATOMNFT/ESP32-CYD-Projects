@@ -10,6 +10,6 @@ The data is refreshed every minute or you can manually refresh it with the butto
 
 <br>
 
-![atomstats](images/atomtats.jpg)
+![atomstats](images/atomstats.jpg)
 <br>
 ![fr4nkstats](images/fr4nkstats.jpg)
