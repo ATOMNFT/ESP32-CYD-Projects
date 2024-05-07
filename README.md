@@ -1,4 +1,4 @@
-![Header](images/cydprojects.png)
+![Header](images/cyd-projects.png)
 
 <br>
 
