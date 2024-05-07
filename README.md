@@ -15,7 +15,7 @@
 
 ## 📁 Project Directory 📁
 
-- <a href=https://github.com/ATOMNFT/ESP32-CYD-Projects/tree/main/CYD-Projects/cyd-github-stats>CYD GitHub Stats</a>
+- <a href=https://github.com/ATOMNFT/ESP32-CYD-Projects/tree/main/GitHub-Stats>CYD GitHub Stats</a>
   
   <hr>
   
