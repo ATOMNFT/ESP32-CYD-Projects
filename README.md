@@ -10,10 +10,11 @@
 
 <b>Sample projects for the esp32 cheap yellow display.</b>
 <br>
-<b>To use arduino IDE with the CYD you must adjust and add a few things to it's enviroment. Follow <a href=https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display/blob/main/SETUP.md>THIS LINK</a> <br>
-to setup arduino ide correctly</b>
-<hr>
+<b>To use arduino IDE with the CYD you must adjust and add a few things to it's enviroment. 
 <br>
+Follow <a href=https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display/blob/main/SETUP.md>THIS LINK</a> to setup arduino ide correctly</b>
+
+___
 
 ## 📁 Project Directory 📁
 
