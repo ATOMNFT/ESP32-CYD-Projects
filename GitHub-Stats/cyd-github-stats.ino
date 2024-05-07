@@ -12,12 +12,12 @@ TFT_eSPI tft = TFT_eSPI();
 #define B_PIN 17
 
 // WiFi credentials
-const char *ssid = "YOURINFOHERE";
-const char *password = "YOURINFOHERE!!";
+const char *ssid = "YOU";
+const char *password = "YOU";
 
 // GitHub API endpoint and repository info
-const char *githubApiUrl = "https://api.github.com/repos/YOUR/INFO/HERE";
-const char *githubToken = "YOURINFOHERE"; // Optional: Use a personal access token for better rate limits
+const char *githubApiUrl = "YOU";
+const char *githubToken = "YOU"; // Optional: Use a personal access token for better rate limits
 
 // Buffer size for HTTP response
 const int bufferSize = JSON_OBJECT_SIZE(6) + 210;
@@ -104,11 +104,10 @@ void fetchGitHubStats() {
       // Display GitHub stats on TFT screen
       displayStats(repoName, stars, forks, issues, lastCommit);
 
-      // Make RGB LED green
-      analogWrite(R_PIN, 255); // Red on
-      analogWrite(G_PIN, 0); // Green off
-      analogWrite(B_PIN, 255); // Blue on
-      delay(1000); // Stay green for 1 second
+      // Turn off LED after updating the stats
+      digitalWrite(R_PIN, HIGH); // Red off
+      digitalWrite(G_PIN, HIGH); // Green off
+      digitalWrite(B_PIN, HIGH); // Blue off
     }
   } else {
     Serial.printf("HTTP Error: %s\n", http.errorToString(httpResponseCode).c_str());
@@ -169,7 +168,12 @@ void touchHandler() {
     int buttonEndY = buttonY + buttonHeight;
 
     if (x >= buttonX && x <= buttonEndX && y >= buttonY && y <= buttonEndY) {
-      // Refresh button pressed, fetch GitHub stats again
+      // Refresh button pressed, make LED blue
+      digitalWrite(R_PIN, HIGH); // Red off
+      digitalWrite(G_PIN, HIGH); // Green off
+      digitalWrite(B_PIN, LOW);  // Blue on
+
+      // Fetch GitHub stats again
       fetchGitHubStats();
     }
   }
