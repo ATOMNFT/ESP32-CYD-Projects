@@ -13,15 +13,16 @@ TFT_eSPI tft = TFT_eSPI();
 #define B_PIN 17
 
 // WiFi credentials
-const char* ssid = "you";
-const char* password = "you";
+const char* ssid = "YOU";
+const char* password = "YOU;
 
 // GitHub API endpoint and repository info
-const char* githubApiUrl = "you";
-const char* githubToken = "you"; // Use a personal access token for better rate limits
+const char* githubApiUrl = "YOU";
+const char* githubUserUrl = "YOU"; // User API for follower count
+const char* githubToken = "YOU"; // Use a personal access token for better rate limits
 
 // Buffer size for HTTP response
-const int bufferSize = JSON_OBJECT_SIZE(6) + 210;
+const int bufferSize = JSON_OBJECT_SIZE(10) + 400;
 
 // Touch button dimensions and colors
 const int buttonWidth = 120;
@@ -104,30 +105,52 @@ void fetchGitHubStats() {
       Serial.println("Response:");
       Serial.println(response);
 
-      DynamicJsonDocument doc(bufferSize);
-      deserializeJson(doc, response);
+      DynamicJsonDocument docRepo(bufferSize);
+      deserializeJson(docRepo, response);
 
-      String repoName = doc["full_name"];
-      int stars = doc["stargazers_count"];
-      int forks = doc["forks_count"];
-      int issues = doc["open_issues_count"];
-      String lastCommit = doc["pushed_at"];
+      String repoName = docRepo["full_name"];
+      int stars = docRepo["stargazers_count"];
+      int forks = docRepo["forks_count"];
+      int issues = docRepo["open_issues_count"];
+      String lastCommit = docRepo["pushed_at"];
 
-      displayStats(repoName, stars, forks, issues, lastCommit);
+      // Also fetch and display follower count
+      HTTPClient httpUser;
+      httpUser.begin(githubUserUrl);
+      if (strlen(githubToken) > 0) {
+        httpUser.addHeader("Authorization", "token " + String(githubToken));
+      }
+      httpResponseCode = httpUser.GET();
+      if (httpResponseCode == HTTP_CODE_OK) {
+        String userResponse = httpUser.getString();
+        DynamicJsonDocument docUser(bufferSize);
+        deserializeJson(docUser, userResponse);
+        int followers = docUser["followers"];
 
-      // Turn off LED after updating the stats
-      digitalWrite(R_PIN, HIGH); // Red off
-      digitalWrite(G_PIN, HIGH); // Green off
-      digitalWrite(B_PIN, HIGH); // Blue off
+        displayStats(repoName, stars, forks, issues, lastCommit, followers);
+
+        digitalWrite(R_PIN, HIGH); // Red off
+        digitalWrite(G_PIN, HIGH); // Green off
+        digitalWrite(B_PIN, HIGH); // Blue off
+      
+      } else {
+        Serial.printf("HTTP Error getting user data: %s\n", httpUser.errorToString(httpResponseCode).c_str());
+      }
+      httpUser.end();
     }
   } else {
-    Serial.printf("HTTP Error: %s\n", http.errorToString(httpResponseCode).c_str());
+    Serial.printf("HTTP Error getting repo data: %s\n", http.errorToString(httpResponseCode).c_str());
   }
 
   http.end(); // Close connection
+
+  // Turn off LED after updating the stats
+  digitalWrite(R_PIN, HIGH); // Red off
+  digitalWrite(G_PIN, HIGH); // Green off
+  digitalWrite(B_PIN, HIGH); // Blue off
 }
 
-void displayStats(String repoName, int stars, int forks, int issues, String lastCommit) {
+void displayStats(String repoName, int stars, int forks, int issues, String lastCommit, int followers) {
   tft.fillScreen(TFT_BLACK); // Clear screen
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(2);
@@ -146,53 +169,70 @@ void displayStats(String repoName, int stars, int forks, int issues, String last
   tft.println(issues);
   tft.print("Last Commit: ");
   tft.println(lastCommit);
+  tft.print("Followers: ");
+  tft.println(followers);
 
   struct tm *tm_info = localtime(&lastRefreshTime);
   char buffer[30];
   strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
-  tft.setCursor(10, 200);
+  tft.setCursor(10, 200);  // Adjust position as needed
   tft.print("Last checked: ");
   tft.println(buffer);
 
   // Draw refresh button
   int buttonX = (tft.width() - buttonWidth) / 2;
-  drawButton("Refresh", textColor, buttonColor, buttonX, 230); // Adjust button position if needed
+  drawButton("Refresh", textColor, buttonColor, buttonX, 260); // Adjust button position if needed
 }
 
 void drawScreen() {
-  tft.fillScreen(TFT_BLACK); // Clear screen
-  tft.setTextColor(TFT_WHITE);
-  tft.setTextSize(2);
-  tft.setCursor(10, 10);
-  tft.println("GitHub Stats:");
+    tft.fillScreen(TFT_BLACK); // Clear the screen
+    tft.setTextColor(TFT_WHITE);
+    tft.setTextSize(2);
+    tft.setCursor(10, 10);
+    tft.println("GitHub Stats:");
+
+    // Redraw button in case it moved or was not initialized
+    drawButton("Refresh", textColor, buttonColor, (tft.width() - buttonWidth) / 2, tft.height() - buttonHeight - 10);
 }
 
 void drawButton(String label, uint32_t textColor, uint32_t buttonColor, int x, int y) {
   tft.fillRect(x, y, buttonWidth, buttonHeight, buttonColor);
   tft.setTextColor(textColor);
   tft.setTextSize(1);
-  tft.setCursor(x + 10, y + 10);
+  int textWidth = tft.textWidth(label); // Calculate the width of the label text
+  int textX = x + (buttonWidth - textWidth) / 2; // Calculate x-coordinate for centering
+  int textY = y + (buttonHeight - tft.fontHeight()) / 2; // Calculate y-coordinate for centering vertically
+  tft.setCursor(textX, textY);
   tft.println(label);
 }
 
 void touchHandler() {
-  uint16_t x, y;
-  uint16_t threshold = 30; // Touch sensitivity
-  if (tft.getTouch(&x, &y, threshold)) {
-    // Calculate button bounds
-    int buttonX = (tft.width() - buttonWidth) / 2;
-    int buttonY = 180;
-    int buttonEndX = buttonX + buttonWidth;
-    int buttonEndY = buttonY + buttonHeight;
+    uint16_t x, y;
+    uint16_t threshold = 30; // Touch sensitivity
+    if (tft.getTouch(&x, &y, threshold)) {
+        Serial.print("Touch at: (");
+        Serial.print(x);
+        Serial.print(", ");
+        Serial.print(y);
+        Serial.println(")");
 
-    if (x >= buttonX && x <= buttonEndX && y >= buttonY && y <= buttonEndY) {
-      // Refresh button pressed, make LED blue
-      digitalWrite(R_PIN, HIGH); // Red off
-      digitalWrite(G_PIN, HIGH); // Green off
-      digitalWrite(B_PIN, LOW);  // Blue on
+        // Button coordinates as per the visual position
+        int buttonX = 37;
+        int buttonY = 142;
+        int buttonEndX = buttonX + buttonWidth;
+        int buttonEndY = buttonY + buttonHeight;
 
-      // Fetch GitHub stats again
-      fetchGitHubStats();
+        if (x >= buttonX && x <= buttonEndX && y >= buttonY && y <= buttonEndY) {
+            // Refresh button pressed, make LED blue
+            digitalWrite(R_PIN, HIGH); // Red off
+            digitalWrite(G_PIN, HIGH); // Green off
+            digitalWrite(B_PIN, LOW);  // Blue on
+
+            // Fetch GitHub stats again
+            fetchGitHubStats();
+
+            // Turn off the LED after some time or in fetchGitHubStats
+            digitalWrite(B_PIN, HIGH); // Blue off
+        }
     }
-  }
 }
