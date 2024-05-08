@@ -2,6 +2,7 @@
 #include <HTTPClient.h>
 #include <TFT_eSPI.h>
 #include <ArduinoJson.h>
+#include <time.h>
 
 // TFT display
 TFT_eSPI tft = TFT_eSPI();
@@ -12,12 +13,12 @@ TFT_eSPI tft = TFT_eSPI();
 #define B_PIN 17
 
 // WiFi credentials
-const char *ssid = "YOU";
-const char *password = "YOU";
+const char* ssid = "you";
+const char* password = "you";
 
 // GitHub API endpoint and repository info
-const char *githubApiUrl = "YOU";
-const char *githubToken = "YOU"; // Optional: Use a personal access token for better rate limits
+const char* githubApiUrl = "you";
+const char* githubToken = "you"; // Use a personal access token for better rate limits
 
 // Buffer size for HTTP response
 const int bufferSize = JSON_OBJECT_SIZE(6) + 210;
@@ -32,6 +33,9 @@ const int textColor = TFT_WHITE;
 unsigned long previousMillis = 0;
 const long interval = 60000; // 1 minute interval for refreshing
 
+// Time of the last API check
+time_t lastRefreshTime = 0;
+
 void setup() {
   Serial.begin(115200);
   tft.begin(); // Initialize TFT display
@@ -40,7 +44,17 @@ void setup() {
   pinMode(G_PIN, OUTPUT);
   pinMode(B_PIN, OUTPUT);
 
+  // Initially turn off all LEDs
+  digitalWrite(R_PIN, HIGH);
+  digitalWrite(G_PIN, HIGH);
+  digitalWrite(B_PIN, HIGH);
+
   connectToWiFi();
+
+  // Initialize time with NTP
+  configTime(-6 * 3600, 3600, "pool.ntp.org", "time.nist.gov");
+  setenv("TZ", "CST6CDT,M3.2.0,M11.1.0", 1);
+  tzset();
 
   // Draw initial screen
   drawScreen();
@@ -75,7 +89,6 @@ void connectToWiFi() {
 void fetchGitHubStats() {
   Serial.println("Fetching GitHub stats");
 
-  // Set up HTTP client
   HTTPClient http;
   http.begin(githubApiUrl);
   if (strlen(githubToken) > 0) {
@@ -86,22 +99,20 @@ void fetchGitHubStats() {
   if (httpResponseCode > 0) {
     Serial.printf("HTTP Response code: %d\n", httpResponseCode);
     if (httpResponseCode == HTTP_CODE_OK) {
+      lastRefreshTime = time(nullptr); // Update the last refresh time on successful fetch
       String response = http.getString();
       Serial.println("Response:");
       Serial.println(response);
 
-      // Parse JSON response
       DynamicJsonDocument doc(bufferSize);
       deserializeJson(doc, response);
 
-      // Extract GitHub stats
       String repoName = doc["full_name"];
       int stars = doc["stargazers_count"];
       int forks = doc["forks_count"];
       int issues = doc["open_issues_count"];
       String lastCommit = doc["pushed_at"];
 
-      // Display GitHub stats on TFT screen
       displayStats(repoName, stars, forks, issues, lastCommit);
 
       // Turn off LED after updating the stats
@@ -136,9 +147,16 @@ void displayStats(String repoName, int stars, int forks, int issues, String last
   tft.print("Last Commit: ");
   tft.println(lastCommit);
 
-  // Calculate x-coordinate for centered button
+  struct tm *tm_info = localtime(&lastRefreshTime);
+  char buffer[30];
+  strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
+  tft.setCursor(10, 200);
+  tft.print("Last checked: ");
+  tft.println(buffer);
+
+  // Draw refresh button
   int buttonX = (tft.width() - buttonWidth) / 2;
-  drawButton("Refresh", textColor, buttonColor, buttonX, 180);
+  drawButton("Refresh", textColor, buttonColor, buttonX, 230); // Adjust button position if needed
 }
 
 void drawScreen() {
