@@ -14,11 +14,11 @@ TFT_eSPI tft = TFT_eSPI();
 
 // WiFi credentials
 const char* ssid = "YOU";
-const char* password = "YOU;
+const char* password = "YOU";
 
 // GitHub API endpoint and repository info
-const char* githubApiUrl = "YOU";
-const char* githubUserUrl = "YOU"; // User API for follower count
+const char* githubApiUrl = "https://api.github.com/repos/YOU/REPO"; // Repo you want to monitor
+const char* githubUserUrl = "https://api.github.com/users/YOURUSERNAME"; // User API for follower count
 const char* githubToken = "YOU"; // Use a personal access token for better rate limits
 
 // Buffer size for HTTP response
@@ -114,6 +114,24 @@ void fetchGitHubStats() {
       int issues = docRepo["open_issues_count"];
       String lastCommit = docRepo["pushed_at"];
 
+      // Fetch notification count
+      HTTPClient httpNotifications;
+      httpNotifications.begin("https://api.github.com/notifications");
+      if (strlen(githubToken) > 0) {
+        httpNotifications.addHeader("Authorization", "token " + String(githubToken));
+      }
+      int notificationsCount = 0;
+      httpResponseCode = httpNotifications.GET();
+      if (httpResponseCode == HTTP_CODE_OK) {
+        String notificationsResponse = httpNotifications.getString();
+        DynamicJsonDocument docNotifications(2000); // Adjust size based on expected notifications
+        deserializeJson(docNotifications, notificationsResponse);
+        notificationsCount = docNotifications.size(); // Count notifications
+      } else {
+        Serial.printf("HTTP Error getting notifications: %s\n", httpNotifications.errorToString(httpResponseCode).c_str());
+      }
+      httpNotifications.end();
+
       // Also fetch and display follower count
       HTTPClient httpUser;
       httpUser.begin(githubUserUrl);
@@ -127,7 +145,7 @@ void fetchGitHubStats() {
         deserializeJson(docUser, userResponse);
         int followers = docUser["followers"];
 
-        displayStats(repoName, stars, forks, issues, lastCommit, followers);
+        displayStats(repoName, stars, forks, issues, lastCommit, followers, notificationsCount);
 
         digitalWrite(R_PIN, HIGH); // Red off
         digitalWrite(G_PIN, HIGH); // Green off
@@ -143,14 +161,9 @@ void fetchGitHubStats() {
   }
 
   http.end(); // Close connection
-
-  // Turn off LED after updating the stats
-  digitalWrite(R_PIN, HIGH); // Red off
-  digitalWrite(G_PIN, HIGH); // Green off
-  digitalWrite(B_PIN, HIGH); // Blue off
 }
 
-void displayStats(String repoName, int stars, int forks, int issues, String lastCommit, int followers) {
+void displayStats(String repoName, int stars, int forks, int issues, String lastCommit, int followers, int notificationsCount) {
   tft.fillScreen(TFT_BLACK); // Clear screen
   tft.setTextColor(TFT_WHITE);
   tft.setTextSize(2);
@@ -171,17 +184,19 @@ void displayStats(String repoName, int stars, int forks, int issues, String last
   tft.println(lastCommit);
   tft.print("Followers: ");
   tft.println(followers);
+  tft.print("Notifications: ");
+  tft.println(notificationsCount);
 
   struct tm *tm_info = localtime(&lastRefreshTime);
   char buffer[30];
   strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
-  tft.setCursor(10, 200);  // Adjust position as needed
+  tft.setCursor(10, 240);  // Adjust position as needed
   tft.print("Last checked: ");
   tft.println(buffer);
 
   // Draw refresh button
   int buttonX = (tft.width() - buttonWidth) / 2;
-  drawButton("Refresh", textColor, buttonColor, buttonX, 260); // Adjust button position if needed
+  drawButton("Refresh", textColor, buttonColor, buttonX, 280); // Adjust button position if needed
 }
 
 void drawScreen() {
@@ -217,8 +232,8 @@ void touchHandler() {
         Serial.println(")");
 
         // Button coordinates as per the visual position
-        int buttonX = 37;
-        int buttonY = 142;
+        int buttonX = 19;
+        int buttonY = 133;
         int buttonEndX = buttonX + buttonWidth;
         int buttonEndY = buttonY + buttonHeight;
 
