@@ -165,11 +165,12 @@ void fetchGitHubStats() {
 
 void displayStats(String repoName, int stars, int forks, int issues, String lastCommit, int followers, int notificationsCount) {
   tft.fillScreen(TFT_BLACK); // Clear screen
-  tft.setTextColor(TFT_WHITE);
+  tft.setTextColor(TFT_WHITE); // Edit for heading color
   tft.setTextSize(2);
-  tft.setCursor(10, 10);
+  tft.setCursor(45, 10);
   tft.println("GitHub Stats:");
 
+  tft.setTextColor(TFT_YELLOW); // Edit for stats color
   tft.setTextSize(1);
   tft.setCursor(10, 40);
   tft.print("Repository: ");
@@ -197,13 +198,14 @@ void displayStats(String repoName, int stars, int forks, int issues, String last
   struct tm *tm_info = localtime(&lastRefreshTime);
   char buffer[30];
   strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
-  tft.setCursor(10, 240);  // Adjust position as needed
+  tft.setCursor(28, 245);  // Adjust position as needed
   tft.print("Refreshed: ");
   tft.println(buffer);
+ 
 
   // Draw refresh button
   int buttonX = (tft.width() - buttonWidth) / 2;
-  drawButton("Refresh", textColor, buttonColor, buttonX, 280); // Adjust button position if needed
+  drawButton("Refresh", textColor, buttonColor, buttonX, 265); // Adjust button position if needed
 }
 
 void drawScreen() {
@@ -258,4 +260,3 @@ void touchHandler() {
         }
     }
 }
-
