@@ -52,5 +52,5 @@ ___
 <br>
 
 ![atom-stats](images/atom-stats.jpg)
-<br>
+
 ![fr4nkstatsstats](images/fr4nkstats.jpg)
