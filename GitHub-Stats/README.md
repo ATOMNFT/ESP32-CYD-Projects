@@ -11,7 +11,7 @@ The data is refreshed every minute or you can manually refresh it with the butto
 The rgb led on the back changes to blue upon a refresh.</b>
 
 ## Changing text color/s
-If you would like to edit the colors of the text the following bits of code are where you make these edits.
+If you would like to edit the colors of the text, the following bits of code are where you make these edits.
 > void displayStats(String repoName, int stars, int forks, int issues, String lastCommit, int followers, int notificationsCount) { <br>
   tft.fillScreen(TFT_BLACK); // Clear screen <br>
   tft.setTextColor(TFT_VIOLET); // Edit for heading color <br>
