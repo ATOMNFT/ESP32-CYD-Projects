@@ -174,24 +174,31 @@ void displayStats(String repoName, int stars, int forks, int issues, String last
   tft.setCursor(10, 40);
   tft.print("Repository: ");
   tft.println(repoName);
+  tft.setCursor(10, 50);
   tft.print("Stars: ");
   tft.println(stars);
+  tft.setCursor(10, 60);
   tft.print("Forks: ");
   tft.println(forks);
+  tft.setCursor(10, 70);
   tft.print("Open Issues: ");
   tft.println(issues);
+  tft.setCursor(10, 80);
   tft.print("Last Commit: ");
   tft.println(lastCommit);
+  tft.setCursor(10, 90);
   tft.print("Followers: ");
   tft.println(followers);
+  tft.setCursor(10, 100);
   tft.print("Notifications: ");
   tft.println(notificationsCount);
+  tft.setCursor(10, 110);
 
   struct tm *tm_info = localtime(&lastRefreshTime);
   char buffer[30];
   strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_info);
   tft.setCursor(10, 240);  // Adjust position as needed
-  tft.print("Last checked: ");
+  tft.print("Refreshed: ");
   tft.println(buffer);
 
   // Draw refresh button
@@ -251,3 +258,4 @@ void touchHandler() {
         }
     }
 }
+
