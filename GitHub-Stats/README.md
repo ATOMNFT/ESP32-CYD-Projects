@@ -6,7 +6,9 @@
 
 <b>Sample project that fetches and displays some basic stat info from a github repo of your choosing. 
 <br>
-The data is refreshed every minute or you can manually refresh it with the button on the screen. The rgb led on the back changes to blue upon a refresh.</b>
+The data is refreshed every minute or you can manually refresh it with the button on the screen. 
+<br>
+The rgb led on the back changes to blue upon a refresh.</b>
 
 <br>
 
