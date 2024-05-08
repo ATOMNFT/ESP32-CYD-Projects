@@ -13,13 +13,13 @@ TFT_eSPI tft = TFT_eSPI();
 #define B_PIN 17
 
 // WiFi credentials
-const char* ssid = "YOU";
-const char* password = "YOU";
+const char* ssid = "YOURINFO";
+const char* password = "YOURINFO";
 
 // GitHub API endpoint and repository info
-const char* githubApiUrl = "https://api.github.com/repos/YOU/REPO"; // Repo you want to monitor
-const char* githubUserUrl = "https://api.github.com/users/YOURUSERNAME"; // User API for follower count
-const char* githubToken = "YOU"; // Use a personal access token for better rate limits
+const char* githubApiUrl = "https://api.github.com/repos/USERNAME/REPO";
+const char* githubUserUrl = "https://api.github.com/users/USERNAME"; // User API for follower count
+const char* githubToken = "YOUR-API-KEY"; // Use a personal access token for better rate limits
 
 // Buffer size for HTTP response
 const int bufferSize = JSON_OBJECT_SIZE(10) + 400;
@@ -163,37 +163,66 @@ void fetchGitHubStats() {
   http.end(); // Close connection
 }
 
+// Global variables for scrolling text
+int scrollPosition = 0; // Initial scroll position
+int scrollSpeed = 1;    // Speed of scrolling (adjust as needed)
+unsigned long previousScrollMillis = 0;
+const long scrollInterval = 100; // Interval for scrolling update
+
 void displayStats(String repoName, int stars, int forks, int issues, String lastCommit, int followers, int notificationsCount) {
   tft.fillScreen(TFT_BLACK); // Clear screen
-  tft.setTextColor(TFT_WHITE); // Edit for heading color
+  tft.setTextColor(TFT_VIOLET); // Edit for heading color
   tft.setTextSize(2);
   tft.setCursor(45, 10);
   tft.println("GitHub Stats:");
 
   tft.setTextColor(TFT_YELLOW); // Edit for stats color
   tft.setTextSize(1);
+
+  // Display repository name
   tft.setCursor(10, 40);
   tft.print("Repository: ");
-  tft.println(repoName);
-  tft.setCursor(10, 50);
-  tft.print("Stars: ");
-  tft.println(stars);
-  tft.setCursor(10, 60);
-  tft.print("Forks: ");
-  tft.println(forks);
-  tft.setCursor(10, 70);
-  tft.print("Open Issues: ");
-  tft.println(issues);
-  tft.setCursor(10, 80);
+  int repoNameLength = repoName.length();
+  int repoNameStart = 10; // Initial cursor position for repository name
+
+  // Check if repository name is likely to wrap
+  if (repoNameLength > 20) { // Adjust number based on your display width and font size
+    String firstLine = repoName.substring(0, 20); // Adjust length based on your display size
+    String restOfName = repoName.substring(20);
+    tft.println(firstLine);
+    tft.setCursor(repoNameStart + 12, 50); // Adjust Y position based on your font size and screen
+    tft.println(restOfName);
+  } else {
+    tft.println(repoName);
+  }
+
+  tft.setCursor(20, 230);
   tft.print("Last Commit: ");
   tft.println(lastCommit);
-  tft.setCursor(10, 90);
+
+  // Continue with other stats below
+  tft.setCursor(10, 70);
+  tft.print("Stars: ");
+  tft.println(stars);
+  tft.setCursor(10, 80);
+  tft.print("Forks: ");
+  tft.println(forks);
+  tft.setCursor(10, 90);  // Set cursor for issues
+  if (issues > 0) {
+      tft.setTextColor(TFT_RED);  // Set text color to red if issues are greater than 0
+  } else {
+      tft.setTextColor(TFT_YELLOW);  // Keep the original color if no issues
+  }
+  tft.print("Open Issues: ");
+  tft.println(issues);
+  tft.setTextColor(TFT_YELLOW);  // Reset the color for subsequent text
+  tft.setCursor(10, 100);
   tft.print("Followers: ");
   tft.println(followers);
-  tft.setCursor(10, 100);
+  tft.setCursor(10, 110);
   tft.print("Notifications: ");
   tft.println(notificationsCount);
-  tft.setCursor(10, 110);
+  tft.setCursor(10, 120); // Add this for an additional space
 
   struct tm *tm_info = localtime(&lastRefreshTime);
   char buffer[30];
@@ -201,11 +230,27 @@ void displayStats(String repoName, int stars, int forks, int issues, String last
   tft.setCursor(28, 245);  // Adjust position as needed
   tft.print("Refreshed: ");
   tft.println(buffer);
- 
 
   // Draw refresh button
   int buttonX = (tft.width() - buttonWidth) / 2;
   drawButton("Refresh", textColor, buttonColor, buttonX, 265); // Adjust button position if needed
+}
+
+
+void scrollText(String text) {
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousScrollMillis >= scrollInterval) {
+    previousScrollMillis = currentMillis;
+
+    int textWidth = tft.textWidth(text);
+    if (scrollPosition <= -textWidth) {
+      scrollPosition = tft.width(); // Reset scroll position
+    }
+
+    tft.setCursor(scrollPosition, 40);
+    tft.print(text);
+    scrollPosition -= scrollSpeed;
+  }
 }
 
 void drawScreen() {
