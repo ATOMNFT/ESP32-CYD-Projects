@@ -9,6 +9,7 @@
 The data is refreshed every minute or you can manually refresh it with the button on the screen. 
 <br>
 The rgb led on the back changes to blue upon a refresh.</b>
+<b>Thanks to <a href=https://github.com/Fr4nkFletcher>Fr4nkFletcher</a> for his contribution on this project!</b>
 
 ## Changing text color/s
 If you would like to edit the colors of the text, the following bits of code are where you make these edits.
