@@ -29,7 +29,7 @@ These sketches Successfully tested on
 ---
 
 <p align="center">
-<img src="https://github.com/ATOMNFT/ESP-CYD-Projects/blob/main/Images/Repolike.svg">
+<img src="https://github.com/ATOMNFT/ESP32-CYD-Projects/blob/main/images/Repolike.svg">
 </p>
 
 
