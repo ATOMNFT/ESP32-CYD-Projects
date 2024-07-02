@@ -2,6 +2,8 @@
   
 # Deauth Detective
 
+![Header](Images/preview.gif)
+
 </div>
 
 <b>Sample project that displays a happy face while scanning for deauth attacks. When a attack is found the face changes to an angry face and displays the attackers mac address. 
