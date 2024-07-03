@@ -73,7 +73,7 @@ void DisplayManager::displayScanningChannel(uint8_t channel, int step) {
   tft.setTextSize(2);
   tft.setCursor(5, 5);
   tft.setTextColor(TFT_GREEN);
-  tft.print("Scanning Channel: ");
+  tft.print("Scanning Channel:");
   tft.print(channel);  // Display current channel number
   tft.setFreeFont(CUSTOM_FONT_FACES);  // Switch to custom font for character
   tft.setTextSize(2);

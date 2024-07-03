@@ -15,7 +15,7 @@ Partition Scheme: Minimal SPIFFS
 #define CONFIG_H
 
 // Uncomment the display type you are using
-//#define DISPLAY_TYPE_TTGO_T
-#define DISPLAY_TYPE_LOLIN_D32
+#define DISPLAY_TYPE_TTGO_T
+//#define DISPLAY_TYPE_LOLIN_D32
 
 #endif

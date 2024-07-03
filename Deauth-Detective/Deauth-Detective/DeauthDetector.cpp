@@ -25,6 +25,7 @@ char DeauthDetector::attacker_mac[18];  // Buffer to store MAC address
 #define B_PIN 17
 
 void DeauthDetector::initNeoPixelPins() {
+  #ifdef DISPLAY_TYPE_LOLIN_D32
   pinMode(R_PIN, OUTPUT);
   pinMode(G_PIN, OUTPUT);
   pinMode(B_PIN, OUTPUT);
@@ -33,13 +34,14 @@ void DeauthDetector::initNeoPixelPins() {
   digitalWrite(R_PIN, HIGH);
   digitalWrite(G_PIN, LOW);
   digitalWrite(B_PIN, HIGH);
+  #endif
 }
 
 void DeauthDetector::scanChannels() {
   // Scan channels 1-13 for deauth attacks
   for (channel = 1; channel <= 13; channel++) {
     esp_wifi_set_channel(channel, WIFI_SECOND_CHAN_NONE);
-    Serial.print("Scanning Channel: ");
+    Serial.print("Scanning Channel:");
     Serial.println(channel);
     delay(100);  // Adjust delay as needed
 
@@ -86,8 +88,10 @@ void IRAM_ATTR DeauthDetector::sniffer_packet_handler(void* buf, wifi_promiscuou
     deauthDetected = true;
 
     // Turn the NeoPixel red
+    #ifdef DISPLAY_TYPE_LOLIN_D32
     digitalWrite(R_PIN, 0);
     digitalWrite(G_PIN, 255);
     digitalWrite(B_PIN, 255);
+    #endif
   }
 }
