@@ -16,7 +16,7 @@
 ## Description
 This project allows an ESP32 with a TFT display to fetch system statistics (CPU, memory, disk usage, and uptime) from a Flask-based API running on an Ubuntu server. The data is retrieved over WiFi and displayed on the ESP32's TFT screen.
 
-![CYD](Images/cyd.jpg) ![E-Paper](Images/e-paper.jpg)
+![CYD](Images/cyd-sample.jpg) ![E-Paper](Images/e-paper-sample.jpg)
 
 ---
 
