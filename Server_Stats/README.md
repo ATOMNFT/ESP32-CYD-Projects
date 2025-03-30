@@ -13,6 +13,12 @@
 
 # ESP32 Server Monitor
 
+## 🚀 Upcoming Update: TTGO T5 E-Paper Support!
+
+📢 *I am finalizing the version of this project for the 2.13-inch TTGO T5 ESP32 E-Paper display!* Once complete, it will be added to this repository. Stay tuned for updates!
+
+---
+
 ## Description
 This project allows an ESP32 with a TFT display to fetch system statistics (CPU, memory, disk usage, and uptime) from a Flask-based API running on an Ubuntu server. The data is retrieved over WiFi and displayed on the ESP32's TFT screen.
 
