@@ -13,9 +13,9 @@
 
 # ESP32 Server Monitor
 
-## 🚀 Upcoming Update: TTGO T5 E-Paper Support!
+## 🚀 TTGO T5 E-Paper Support:
 
-📢 *I am finalizing the version of this project for the 2.13-inch TTGO T5 ESP32 E-Paper display!* Once complete, it will be added to this repository. Stay tuned for updates!
+📢 <a href="https://github.com/ATOMNFT/TTGO-T5-E-Paper/tree/main/Projects/EPD-ServerStats">Server-Stats for ESP32 TTGO T5 EPD</a>
 
 ---
 
