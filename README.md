@@ -15,6 +15,7 @@ ___
 - <a href=https://github.com/ATOMNFT/ESP32-CYD-Projects/tree/main/GitHub-Stats>CYD GitHub Stats</a>
 - <a href=https://github.com/ATOMNFT/ESP32-CYD-Projects/tree/main/Deauth-Detective>Deauth-Detective</a>
 - <a href=https://github.com/ATOMNFT/ESP32-CYD-Projects/tree/main/Server_Stats>Server-Stats</a>
+- <a href=https://github.com/ATOMNFT/ESP32-CYD-Projects/tree/main/Server_Stats>Random-Bible-Verse</a>
   
   <hr>
   
