@@ -1,4 +1,4 @@
-![Header](/images/JC2432W328C-projects.png)
+![Header](https://github.com/ATOMNFT/ESP32-CYD-Projects/blob/main/CYD%20Variants/images/JC2432W328C-projects.png)
 
 <br>
 
