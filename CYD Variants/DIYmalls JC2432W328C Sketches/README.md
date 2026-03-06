@@ -2,10 +2,7 @@
 
 <br>
 
-<b>Sample projects for the 2.8" inch ESP32 JC2432W328C Capacitive Touchscreen.</b>
-<br>
-<b>To use arduino IDE with the CYD you must adjust and add a few things to it's enviroment. 
-<br>
+<b>Sample projects for the 2.8" inch ESP32 JC2432W328C Capacitive Touchscreen.To use arduino IDE with the CYD you must adjust and add a few things to it's enviroment. 
 Follow <a href=https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display/blob/main/SETUP.md>THIS LINK</a> to setup arduino ide correctly</b>
 
 ## 📄 User_setup
