@@ -1,4 +1,4 @@
-![Header](images/variants.png)
+![Header](images/cyd-variants.png)
 
 <br>
 
