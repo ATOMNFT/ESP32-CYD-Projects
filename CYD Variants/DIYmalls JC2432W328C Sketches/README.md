@@ -13,7 +13,7 @@ ___
 ## 📁 Project Directory 📁
 
 - <a href=>JC2432W328C-Touch_Example</a>
-- <a href=>JC2432W328C_Scanner</a>
+- <a href=https://github.com/ATOMNFT/ESP32-CYD-Projects/tree/main/CYD%20Variants/DIYmalls%20JC2432W328C%20Sketches/JC2432W328C_Scanner>JC2432W328C_Scanner</a>
 
   
   <hr>
