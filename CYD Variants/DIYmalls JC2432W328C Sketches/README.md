@@ -1,4 +1,4 @@
-![Header](images/JC2432W328C-projects.png)
+![Header](/images/JC2432W328C-projects.png)
 
 <br>
 
