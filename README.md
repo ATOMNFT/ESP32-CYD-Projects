@@ -7,6 +7,8 @@
 <b>To use arduino IDE with the CYD you must adjust and add a few things to it's enviroment. 
 <br>
 Follow <a href=https://github.com/witnessmenow/ESP32-Cheap-Yellow-Display/blob/main/SETUP.md>THIS LINK</a> to setup arduino ide correctly</b>
+<br>
+<b>Check out sketches for other variants of the CYD <a href=https://github.com/ATOMNFT/ESP32-CYD-Projects/tree/main/CYD%20Variants>HERE</a>.</b>
 
 ___
 
