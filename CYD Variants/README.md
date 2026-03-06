@@ -1,4 +1,4 @@
-![Header](images/cyd-variants.png)
+![Header](images/esp32-cyd-variants.png)
 
 <b>There are many types of this cheap little yellow esp32 with built-in display. I'll try to keep the hard to work with in here.</b>
 <br>
