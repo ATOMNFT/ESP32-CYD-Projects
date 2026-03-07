@@ -1,79 +1,25 @@
 /*
-  JC2432W328C (ESP32) — LVGL v9.0.0 + TFT_eSPI + CST820 Capacitive Touch + Onboard RGB LED (PWM)
-  ======================================================================================
-
-  Created by: ATOMNFT
+  LVGL Touch Test for JC2432W328C / ESP32
+  Created by ATOMNFT
   GitHub: https://github.com/ATOMNFT
 
-  What this sketch is:
-  --------------------
-  A known-good, beginner-friendly example for the ESP32 JC2432W328C / “CYD-style” 240x320
-  touchscreen boards that use:
-    - TFT_eSPI for the display driver (DMA push via pushImageDMA)
-    - CST820 capacitive touch controller over I2C (0x15 on many boards)
-    - LVGL v9.0.0 for UI rendering + input handling
-    - 3-pin onboard RGB LED driven with ESP32 LEDC PWM (separate R/G/B pins)
+  This sketch is a basic LVGL touchscreen test for a 240x320 ESP32 display
+  using TFT_eSPI and the CST820 touch controller. It shows a simple button
+  on screen and changes color/text when touched. The onboard RGB LED is also
+  used for touch feedback.
 
-  What you’ll see:
-  ---------------
-  - A centered LVGL button labeled "TEST"
-  - Touching the button changes it to green and shows "TOUCHED"
-  - Releasing returns it to blue and "TEST"
-  - RGB LED turns GREEN on press, OFF on release
-  - Serial prints show RAW touch coordinates and the mapped coordinates used by LVGL
+  Before flashing:
+  - Install LVGL, TFT_eSPI, and CST820 libraries
+  - Make sure TFT_eSPI is set up correctly for your display
+  - Select the correct ESP32 board and COM port in Arduino IDE
+  - Verify the touch and display pin definitions match your board
 
-  Why touch sometimes “doesn’t work” on these boards:
-  --------------------------------------------------
-  Many JC2432W328C boards have an INT pin that is stuck HIGH, inverted, or not routed.
-  If you gate touch reads using INT (GATE_READS_BY_INT = 1), LVGL may never poll the
-  touch controller. This sketch defaults to polling the CST820 directly:
-
-      #define GATE_READS_BY_INT 0
-
-  This is the most reliable setting across board variants.
-
-  Quick setup notes:
-  ------------------
-  1) TFT_eSPI setup:
-     - Make sure your TFT_eSPI User_Setup matches your panel + pins. I've included a User_setup.h file
-     - This example uses rotation 0:
-         tft.setRotation(0);
-
-  2) Touch I2C pins:
-     - Default here:
-         SDA = GPIO33
-         SCL = GPIO32
-         RST = GPIO25
-         INT = GPIO21
-
-  3) Backlight / power enable:
-     - Many CYD-style boards use GPIO27 as the backlight/power enable.
-
-  4) RGB LED:
-     - Pins used:
-         R = GPIO4, G = GPIO16, B = GPIO17
-     - If your LED behaves “inverted” (common-anode), set:
-         #define RGB_INVERTED 1
-       If your colors act normal (0=off, 255=on), set RGB_INVERTED to 0.
-
-  5) Touch coordinate mapping:
-     - If the touch is mirrored or rotated, adjust the mapping section in
-       my_touchpad_read() by uncommenting ONE mapping option at a time.
-
-  Debug toggles:
-  --------------
-  PRINT_TOUCH_RELEASE : Prints release state (spammy)
-  DEBUG_RAW_I2C_DUMP  : Dumps raw CST820 I2C frames (spammy)
-  GATE_READS_BY_INT   : Gate touch reads using INT (less reliable on many boards)
-  INT_MODE_INPUT_PULLUP: Changes INT pin mode (some boards need INPUT vs INPUT_PULLUP)
-  DO_TOUCH_RESET_PULSE: Sends a reset pulse at boot (helps some CST820 modules)
-
-  License / Use:
-  --------------
-  Use freely in your projects. Credit appreciated. If you improve it, PRs welcome.
-
-  ======================================================================================
+  Notes:
+  - Serial Monitor is used for raw touch debug output
+  - If touch is mirrored or rotated, adjust the mapping in my_touchpad_read()
+  - GPIO 27 is used here for backlight/power enable
 */
+
 
 #include <lvgl.h>        // LVGL v9.0.0
 #include <TFT_eSPI.h>
