@@ -21,7 +21,6 @@
   Notes:
     - This sketch is configured for reliability over display DMA speed
     - Screen updates are pushed with standard TFT_eSPI pixel writes
-    - If DMA support is re-enabled later, comments should be updated to match
 
   Purpose:
     - Touch-based scanner interface for Wi-Fi / BLE style tools
