@@ -2,7 +2,7 @@
   ============================================================================
   JC2432W328C Scanner
   ============================================================================
-  Created by ATOMNFT
+  Created by ATOMNFT.
   GitHub: https://github.com/ATOMNFT
 
   Board / Hardware:
@@ -43,6 +43,7 @@
 #include <Wire.h>
 #include <stdint.h>
 #include <WiFi.h>
+#include <Preferences.h>
 #include "esp_wifi.h"
 #include <BLEDevice.h>
 #include <BLEScan.h>
@@ -51,6 +52,9 @@
 
 #include "config.h"  // Some settings chose to live here.
 
+
+static Preferences prefs;
+static const char *PREF_NS = "jcscan";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Theme runtime colors
@@ -284,6 +288,7 @@ static uint8_t  g_ble_max_results   = CFG_BLE_MAX_RESULTS;  // display cap
 static bool     g_wifi_show_hidden  = CFG_WIFI_SHOW_HIDDEN;
 static bool     g_ble_active_scan   = CFG_BLE_ACTIVE_SCAN;
 static uint8_t  g_brightness_pct    = CFG_BRIGHTNESS_PCT;   // 0-100
+static bool     g_rssi_absolute  = CFG_RSSI_ABSOLUTE; // false: -65 dBm, true: 65
 static uint16_t g_sleep_timeout_s   = CFG_SLEEP_TIMEOUT_S;  // 0 = disabled
 static uint8_t  g_sleep_dim_pct    = CFG_SLEEP_DIM_PCT;    // dim brightness percent
 // Backlight control (GPIO27). Uses LEDC so brightness slider works.
@@ -307,6 +312,8 @@ static void bl_apply(uint8_t pct) {
   g_brightness_pct = pct;
   bl_write(g_brightness_pct);
 }
+
+static void set_backlight_pct(uint8_t pct) { bl_apply(pct); }
 
 // Inactivity dim/off
 static uint32_t g_last_touch_ms = 0;
@@ -390,6 +397,12 @@ static lv_obj_t *scr_home    = nullptr;
 static lv_obj_t *scr_wifi    = nullptr;
 static lv_obj_t *scr_ble     = nullptr;
 static lv_obj_t *scr_settings = nullptr;
+static lv_obj_t *scr_reset        = nullptr;
+static lv_obj_t *reset_hdr        = nullptr;
+static lv_obj_t *reset_box        = nullptr;
+static lv_obj_t *lbl_reset_body   = nullptr;
+static lv_obj_t *btn_reset_ok     = nullptr;
+static lv_obj_t *btn_reset_cancel = nullptr;
 static lv_obj_t *scr_wifi_detail = nullptr;
 static lv_obj_t *scr_ble_detail  = nullptr;
 static lv_obj_t *lbl_wifi_status = nullptr;
@@ -428,6 +441,7 @@ static lv_obj_t *bd_back = nullptr;
 static lv_obj_t *slider_bright = nullptr;
 static lv_obj_t *slider_sleep  = nullptr; // (deprecated, replaced by dd_sleep)
 static lv_obj_t *dd_sleep        = nullptr;
+static lv_obj_t *btn_reset_all  = nullptr;
 static lv_obj_t *dd_ble_secs    = nullptr;
 static lv_obj_t *dd_wifi_secs   = nullptr;
 static lv_obj_t *dd_wifi_max    = nullptr;
@@ -435,6 +449,7 @@ static lv_obj_t *dd_ble_max     = nullptr;
 static lv_obj_t *sw_hidden      = nullptr;
 static lv_obj_t *sw_active      = nullptr;
 static lv_obj_t *sw_rgb         = nullptr;
+static lv_obj_t *sw_rssi_abs    = nullptr;
 static lv_obj_t *dd_theme      = nullptr;
 static lv_obj_t *lbl_wifi_detail = nullptr;
 static lv_obj_t *lbl_ble_detail  = nullptr;
@@ -484,6 +499,15 @@ static void theme_apply_to_ui() {
   
   
   // Settings page (header + body container + controls)
+  // Reset confirm screen
+  if (scr_reset) lv_obj_set_style_bg_color(scr_reset, COL_SCREEN_BG, 0);
+  if (reset_hdr) lv_obj_set_style_bg_color(reset_hdr, COL_HDR_SETTINGS_BG, 0);
+  if (reset_box) {
+    lv_obj_set_style_bg_color(reset_box, COL_PANEL_BG, 0);
+    lv_obj_set_style_border_color(reset_box, COL_BORDER, 0);
+  }
+  if (lbl_reset_body) lv_obj_set_style_text_color(lbl_reset_body, COL_PANEL_TEXT, 0);
+
   if (st_hdr) lv_obj_set_style_bg_color(st_hdr, COL_HDR_SETTINGS_BG, 0);
   if (lbl_settings_title) lv_obj_set_style_text_color(lbl_settings_title, COL_HDR_SETTINGS_TEXT, 0);
 
@@ -510,6 +534,9 @@ static void theme_apply_to_ui() {
   settings_style_switch(sw_hidden);
   settings_style_switch(sw_active);
   settings_style_switch(sw_rgb);
+  settings_style_switch(sw_rssi_abs);
+  settings_style_switch(sw_rssi_abs);
+  settings_style_switch(sw_rssi_abs);
 
 // Detail pages (headers + panels + text)
   if (wd_hdr) lv_obj_set_style_bg_color(wd_hdr, COL_HDR_WIFI_BG, 0);
@@ -747,16 +774,12 @@ static void my_touchpad_read(lv_indev_t *indev, lv_indev_data_t *data) {
   data->point.x = tx;
   data->point.y = ty;
 
-
   // Inactivity tracking: any touch counts as activity + wake from dim
   g_last_touch_ms = millis();
   if (g_dimmed) {
     g_dimmed = false;
     bl_apply(g_brightness_pct);
   }
-  // Inactivity tracking: any touch counts as activity
-  g_last_touch_ms = millis();
-  if (g_dimmed) { g_dimmed = false; bl_apply(g_brightness_pct); }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -805,6 +828,41 @@ static void wifi_hard_reset_sta() {
 // ─────────────────────────────────────────────────────────────────────────────
 // WiFi scan + populate list
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RSSI formatting
+// ─────────────────────────────────────────────────────────────────────────────
+static void format_rssi(int rssi, char *out, size_t out_sz) {
+  if (!out || out_sz == 0) return;
+  if (g_rssi_absolute) {
+    snprintf(out, out_sz, "%d", (int)abs(rssi));
+  } else {
+    snprintf(out, out_sz, "%d dBm", (int)rssi);
+  }
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WiFi security label
+// ─────────────────────────────────────────────────────────────────────────────
+static const char* wifi_auth_name(uint8_t encType) {
+  // Arduino-ESP32 WiFi.encryptionType returns wifi_auth_mode_t values.
+  switch ((wifi_auth_mode_t)encType) {
+    case WIFI_AUTH_OPEN:            return "OPEN";
+    case WIFI_AUTH_WEP:             return "WEP";
+    case WIFI_AUTH_WPA_PSK:         return "WPA";
+    case WIFI_AUTH_WPA2_PSK:        return "WPA2";
+    case WIFI_AUTH_WPA_WPA2_PSK:    return "WPA/WPA2";
+    case WIFI_AUTH_WPA2_ENTERPRISE: return "WPA2-ENT";
+    case WIFI_AUTH_WPA3_PSK:        return "WPA3";
+    case WIFI_AUTH_WPA2_WPA3_PSK:   return "WPA2+WPA3";
+#if defined(WIFI_AUTH_WAPI_PSK)
+    case WIFI_AUTH_WAPI_PSK:        return "WAPI";
+#endif
+    default:                        return "SEC";
+  }
+}
+
 static void run_wifi_scan() {
   g_wifi_scanning = true;
   g_radio_state = RADIO_WIFI_SCAN;
@@ -880,16 +938,20 @@ static void run_wifi_scan() {
       i % 2 == 0 ? COL_LIST_WIFI_EVEN : COL_LIST_WIFI_ODD, 0);
 
     lv_obj_t *lbl = lv_obj_get_child(item, 0);
+    if (!lbl) continue;
 
-    lv_label_set_long_mode((lv_obj_t*)lbl, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_long_mode(lbl, LV_LABEL_LONG_SCROLL_CIRCULAR);
     String ssid = apList[i].ssid.length() > 0 ? apList[i].ssid : "(hidden)";
     if (ssid.length() > 20) ssid = ssid.substring(0, 19) + "~";
 
     char row[96];
-    snprintf(row, sizeof(row), "%s  %s\n%d dBm  CH%ld",
+    char rssiBuf[16];
+    format_rssi((int)apList[i].rssi, rssiBuf, sizeof(rssiBuf));
+
+    snprintf(row, sizeof(row), "%s  %s\n%s  CH%ld",
       authModeName(apList[i].encType),
       ssid.c_str(),
-      (int)apList[i].rssi,
+      rssiBuf,
       (long)apList[i].channel
     );
 
@@ -917,6 +979,54 @@ static void run_wifi_scan() {
 // ─────────────────────────────────────────────────────────────────────────────
 // BLE scan + populate list
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BLE type hints (heuristics)
+// ─────────────────────────────────────────────────────────────────────────────
+static const char* ble_type_hint(const String &name_in) {
+  String name = name_in;
+  name.toLowerCase();
+
+  auto has = [&](const char *s) -> bool { return name.indexOf(s) >= 0; };
+
+  // Earbuds / headphones
+  if (has("airpods") || has("beats") || has("galaxy buds") || has("buds") || has("jbl") || has("sony") || has("bose") || has("headphone") || has("earbud")) {
+    return "Earbuds";
+  }
+
+  // Watches / wearables
+  if (has("watch") || has("apple watch") || has("galaxy watch") || has("fitbit") || has("garmin") || has("mi band") || has("band")) {
+    return "Watch";
+  }
+
+  // Phones / tablets
+  if (has("iphone") || has("ipad") || has("samsung") || has("galaxy") || has("pixel") || has("oneplus") || has("motorola") || has("huawei") || has("xiaomi")) {
+    return "Phone";
+  }
+
+  // Trackers / tags
+  if (has("airtag") || has("tile") || has("chipolo") || has("smarttag") || has("tracker") || has("find my")) {
+    return "Tracker";
+  }
+
+  // Cars / infotainment
+  if (has("tesla") || has("bmw") || has("ford") || has("toyota") || has("honda") || has("car")) {
+    return "Car";
+  }
+
+  // Computers / accessories
+  if (has("macbook") || has("imac") || has("windows") || has("keyboard") || has("mouse") || has("logitech") || has("mx")) {
+    return "PC/Accessory";
+  }
+
+  // Speakers
+  if (has("speaker") || has("soundbar") || has("sonos")) {
+    return "Speaker";
+  }
+
+  return "Unknown";
+}
+
 static void run_ble_scan() {
   g_ble_scanning = true;
   g_radio_state = RADIO_BLE_SCAN;
@@ -997,17 +1107,27 @@ static void run_ble_scan() {
       i % 2 == 0 ? COL_LIST_BLE_EVEN : COL_LIST_BLE_ODD, 0);
 
     lv_obj_t *lbl = lv_obj_get_child(item, 0);
+    if (!lbl) continue;
 
-    lv_label_set_long_mode((lv_obj_t*)lbl, LV_LABEL_LONG_SCROLL_CIRCULAR);
+    lv_label_set_long_mode(lbl, LV_LABEL_LONG_SCROLL_CIRCULAR);
     String nm = bleList[i].name;
+    const char *typeC = ble_type_hint(nm);
+    String typeHint = String(typeC);
+    if (typeHint != "Unknown") {
+      // Keep list clean: only append when short
+      if (nm.length() <= 14) nm = nm + " (" + typeHint + ")";
+    }
     if (nm.length() > 18) nm = nm.substring(0, 17) + "~";
     String addr = bleList[i].address.substring(0, 11) + "..";
 
     char row[80];
-    snprintf(row, sizeof(row), "%s\n%s  %d dBm",
+    char rssiBuf[16];
+    format_rssi((int)bleList[i].rssi, rssiBuf, sizeof(rssiBuf));
+
+    snprintf(row, sizeof(row), "%s\n%s  %s",
       nm.c_str(),
       addr.c_str(),
-      bleList[i].rssi
+      rssiBuf
     );
     lv_label_set_text(lbl, row);
         lv_obj_set_style_text_color(lbl, COL_LIST_TEXT, 0);
@@ -1117,16 +1237,21 @@ static void show_wifi_detail(int idx) {
   String ssid = apList[idx].ssid.length() ? apList[idx].ssid : "(hidden)";
 
   char buf[256];
+  char rssiBuf[16];
+  format_rssi((int)apList[idx].rssi, rssiBuf, sizeof(rssiBuf));
+
+  const char *sec = wifi_auth_name(apList[idx].encType);
+
   snprintf(buf, sizeof(buf),
     "SSID: %s\n"
     "MAC: %s\n"
     "Security: %s\n"
-    "RSSI: %d dBm\n"
+    "RSSI: %s\n"
     "Channel: %ld",
     ssid.c_str(),
     apList[idx].bssid.c_str(),
-    authModeName(apList[idx].encType),
-    (int)apList[idx].rssi,
+    sec,
+    rssiBuf,
     (long)apList[idx].channel
   );
 
@@ -1140,6 +1265,8 @@ static void show_ble_detail(int idx) {
 
   String nm = bleList[idx].name.length() ? bleList[idx].name : "(unnamed)";
 
+
+  const char *type = ble_type_hint(nm);
   char txBuf[16];
   if (bleList[idx].hasTxPower) {
     snprintf(txBuf, sizeof(txBuf), "%d dBm", (int)bleList[idx].txPower);
@@ -1148,16 +1275,20 @@ static void show_ble_detail(int idx) {
   }
 
   char buf[256];
+  char rssiBuf[16];
+  format_rssi((int)bleList[idx].rssi, rssiBuf, sizeof(rssiBuf));
   snprintf(buf, sizeof(buf),
     "Name: %s\n"
+    "Type: %s\n"
     "MAC: %s\n"
-    "RSSI: %d dBm\n"
+    "RSSI: %s\n"
     "Svc UUIDs: %u\n"
     "Mfg Data: %u bytes\n"
     "TX Power: %s",
     nm.c_str(),
+    type,
     bleList[idx].address.c_str(),
-    (int)bleList[idx].rssi,
+    rssiBuf,
     (unsigned)bleList[idx].svcCount,
     (unsigned)bleList[idx].mfgLen,
     txBuf
@@ -1256,6 +1387,7 @@ static void cb_settings_apply(lv_event_t *e) {
   if (lv_event_get_target(e) == dd_theme) {
     g_theme_idx = (uint8_t)lv_dropdown_get_selected(dd_theme);
     theme_apply_to_ui();
+    settings_save_prefs();
     return;
   }
   (void)e;
@@ -1306,6 +1438,7 @@ static void cb_settings_apply(lv_event_t *e) {
   if (sw_active) g_ble_active_scan  = lv_obj_has_state(sw_active, LV_STATE_CHECKED);
   if (sw_rgb)    g_rgb_enabled      = lv_obj_has_state(sw_rgb, LV_STATE_CHECKED);
 
+  if (sw_rssi_abs) g_rssi_absolute = lv_obj_has_state(sw_rssi_abs, LV_STATE_CHECKED);
   if (slider_bright) {
     g_brightness_pct = (uint8_t)lv_slider_get_value(slider_bright);
     bl_apply(g_brightness_pct);
@@ -1325,7 +1458,7 @@ static void cb_settings_apply(lv_event_t *e) {
       if (v > 3600) v = 3600;
       g_sleep_timeout_s = (uint16_t)v;
     }
-  }
+  }  settings_save_prefs();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1438,6 +1571,145 @@ static void settings_style_switch(lv_obj_t *sw) {
   // On uses indicator
   lv_obj_set_style_bg_color(sw, COL_BORDER, LV_PART_INDICATOR);
   lv_obj_set_style_bg_opa(sw, LV_OPA_COVER, LV_PART_INDICATOR);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Persistence (Preferences / NVS)
+// ─────────────────────────────────────────────────────────────────────────────
+static void settings_apply_defaults() {
+  g_ble_scan_secs     = (uint8_t)CFG_BLE_SCAN_SECS;
+  g_wifi_scan_secs    = (uint8_t)CFG_WIFI_SCAN_SECS;
+  g_wifi_max_results  = (uint8_t)CFG_WIFI_MAX_RESULTS;
+  g_ble_max_results   = (uint8_t)CFG_BLE_MAX_RESULTS;
+
+  g_wifi_show_hidden  = (bool)CFG_WIFI_SHOW_HIDDEN;
+  g_ble_active_scan   = (bool)CFG_BLE_ACTIVE_SCAN;
+
+  g_rssi_absolute   = (bool)CFG_RSSI_ABSOLUTE;
+  g_rssi_absolute   = (bool)CFG_RSSI_ABSOLUTE;
+  g_rssi_absolute   = (bool)CFG_RSSI_ABSOLUTE;
+  g_brightness_pct    = (uint8_t)CFG_BRIGHTNESS_PCT;
+  g_sleep_timeout_s   = (uint16_t)CFG_SLEEP_TIMEOUT_S;
+  g_sleep_dim_pct     = (uint8_t)CFG_SLEEP_DIM_PCT;
+
+  g_rgb_enabled       = (bool)CFG_RGB_ENABLED;
+  g_theme_idx         = (uint8_t)CFG_THEME_DEFAULT;
+}
+
+static void settings_load_prefs() {
+  prefs.begin(PREF_NS, true);
+  g_ble_scan_secs     = prefs.getUChar("ble_secs",  (uint8_t)CFG_BLE_SCAN_SECS);
+  g_wifi_scan_secs    = prefs.getUChar("wifi_secs", (uint8_t)CFG_WIFI_SCAN_SECS);
+  g_wifi_max_results  = prefs.getUChar("wifi_max",  (uint8_t)CFG_WIFI_MAX_RESULTS);
+  g_ble_max_results   = prefs.getUChar("ble_max",   (uint8_t)CFG_BLE_MAX_RESULTS);
+
+  g_wifi_show_hidden  = prefs.getBool ("wifi_hid",  (bool)CFG_WIFI_SHOW_HIDDEN);
+  g_ble_active_scan   = prefs.getBool ("ble_act",   (bool)CFG_BLE_ACTIVE_SCAN);
+
+  g_brightness_pct    = prefs.getUChar("bright",    (uint8_t)CFG_BRIGHTNESS_PCT);
+  g_sleep_timeout_s   = prefs.getUShort("sleep_s",  (uint16_t)CFG_SLEEP_TIMEOUT_S);
+  g_sleep_dim_pct     = prefs.getUChar("sleep_dim", (uint8_t)CFG_SLEEP_DIM_PCT);
+
+  g_rgb_enabled       = prefs.getBool ("rgb_en",    (bool)CFG_RGB_ENABLED);
+  g_theme_idx         = prefs.getUChar("theme",     (uint8_t)CFG_THEME_DEFAULT);
+  prefs.end();
+
+  if (g_ble_scan_secs < 1) g_ble_scan_secs = (uint8_t)CFG_BLE_SCAN_SECS;
+  if (g_wifi_scan_secs < 1) g_wifi_scan_secs = (uint8_t)CFG_WIFI_SCAN_SECS;
+  if (g_wifi_max_results < 1) g_wifi_max_results = (uint8_t)CFG_WIFI_MAX_RESULTS;
+  if (g_ble_max_results < 1) g_ble_max_results = (uint8_t)CFG_BLE_MAX_RESULTS;
+  if (g_brightness_pct > 100) g_brightness_pct = 100;
+  if (g_sleep_dim_pct < 1) g_sleep_dim_pct = 1;
+  if (g_sleep_dim_pct > 100) g_sleep_dim_pct = 100;
+  if (g_theme_idx > 3) g_theme_idx = (uint8_t)CFG_THEME_DEFAULT;
+}
+
+static void settings_save_prefs() {
+  prefs.begin(PREF_NS, false);
+  prefs.putUChar("ble_secs",  g_ble_scan_secs);
+  prefs.putUChar("wifi_secs", g_wifi_scan_secs);
+  prefs.putUChar("wifi_max",  g_wifi_max_results);
+  prefs.putUChar("ble_max",   g_ble_max_results);
+
+  prefs.putBool ("wifi_hid",  g_wifi_show_hidden);
+  prefs.putBool ("ble_act",   g_ble_active_scan);
+
+  prefs.putBool("rssi_abs", g_rssi_absolute);
+  prefs.putUChar("bright",    g_brightness_pct);
+  prefs.putUShort("sleep_s",  g_sleep_timeout_s);
+  prefs.putUChar("sleep_dim", g_sleep_dim_pct);
+
+  prefs.putBool ("rgb_en",    g_rgb_enabled);
+  prefs.putUChar("theme",     g_theme_idx);
+  prefs.end();
+}
+
+static void settings_clear_prefs() {
+  prefs.begin(PREF_NS, false);
+  prefs.clear();
+  prefs.end();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Reset All flow
+// ─────────────────────────────────────────────────────────────────────────────
+static void reset_sync_controls_from_runtime();
+
+static void cb_reset_cancel(lv_event_t *e) {
+  if (lv_event_get_code(e) != LV_EVENT_CLICKED) return;
+  lv_screen_load(scr_settings);
+}
+
+static void cb_reset_ok(lv_event_t *e) {
+  if (lv_event_get_code(e) != LV_EVENT_CLICKED) return;
+
+  settings_clear_prefs();
+  settings_apply_defaults();
+
+  theme_apply_to_ui();
+  reset_sync_controls_from_runtime();
+  set_backlight_pct(g_brightness_pct);
+
+  delay(150);
+  ESP.restart();
+}
+
+static void cb_reset_all(lv_event_t *e) {
+  if (lv_event_get_code(e) != LV_EVENT_CLICKED) return;
+  lv_screen_load(scr_reset);
+}
+
+
+static void reset_sync_controls_from_runtime() {
+  if (dd_theme) lv_dropdown_set_selected(dd_theme, g_theme_idx);
+
+  if (sw_hidden) { if (g_wifi_show_hidden) lv_obj_add_state(sw_hidden, LV_STATE_CHECKED); else lv_obj_clear_state(sw_hidden, LV_STATE_CHECKED); }
+  if (sw_active) { if (g_ble_active_scan)  lv_obj_add_state(sw_active, LV_STATE_CHECKED); else lv_obj_clear_state(sw_active, LV_STATE_CHECKED); }
+  if (sw_rgb)    { if (g_rgb_enabled)      lv_obj_add_state(sw_rgb, LV_STATE_CHECKED);    else lv_obj_clear_state(sw_rgb, LV_STATE_CHECKED); }
+  if (sw_rssi_abs) { if (g_rssi_absolute) lv_obj_add_state(sw_rssi_abs, LV_STATE_CHECKED); else lv_obj_clear_state(sw_rssi_abs, LV_STATE_CHECKED); }
+
+  if (slider_bright) lv_slider_set_value(slider_bright, g_brightness_pct, LV_ANIM_OFF);
+
+  if (dd_sleep) {
+    int sel = 0;
+    if (g_sleep_timeout_s == 30) sel = 1;
+    else if (g_sleep_timeout_s == 60) sel = 2;
+    else if (g_sleep_timeout_s == 120) sel = 3;
+    else if (g_sleep_timeout_s == 300) sel = 4;
+    else if (g_sleep_timeout_s == 600) sel = 5;
+    lv_dropdown_set_selected(dd_sleep, sel);
+  }
+
+  settings_style_dropdown(dd_ble_secs);
+  settings_style_dropdown(dd_wifi_secs);
+  settings_style_dropdown(dd_wifi_max);
+  settings_style_dropdown(dd_ble_max);
+  settings_style_dropdown(dd_theme);
+  settings_style_dropdown(dd_sleep);
+  settings_style_slider(slider_bright);
+  settings_style_switch(sw_hidden);
+  settings_style_switch(sw_active);
+  settings_style_switch(sw_rgb);
 }
 
 static void build_ui() {
@@ -1820,6 +2092,16 @@ lv_label_set_text(st_title, "Settings");
     lv_obj_add_event_cb(sw_active, cb_settings_apply, LV_EVENT_VALUE_CHANGED, nullptr);
   }
 
+
+  // RSSI format (absolute vs dBm)
+  {
+    MAKE_ROW("RSSI Abs", row5b);
+    sw_rssi_abs = lv_switch_create(row5b);
+    settings_style_switch(sw_rssi_abs);
+    if (g_rssi_absolute) lv_obj_add_state(sw_rssi_abs, LV_STATE_CHECKED);
+    lv_obj_add_event_cb(sw_rssi_abs, cb_settings_apply, LV_EVENT_VALUE_CHANGED, nullptr);
+  }
+
   // Brightness
   {
     MAKE_ROW("Brightness", row6);
@@ -1862,6 +2144,15 @@ lv_label_set_text(st_title, "Settings");
     lv_obj_add_event_cb(dd_sleep, cb_settings_apply, LV_EVENT_VALUE_CHANGED, nullptr);
   }
 
+  // Reset All (confirmation)
+  {
+    MAKE_ROW("Reset", row_reset);
+    btn_reset_all = make_button(row_reset, "Reset All", COL_BLE_BTN, cb_reset_all);
+    lv_obj_set_size(btn_reset_all, 120, 34);
+    lv_obj_t *lbl = lv_obj_get_child(btn_reset_all, 0);
+    if (lbl) lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
+  }
+
   // RGB LED enable
   {
     MAKE_ROW("RGB LED", row8);
@@ -1873,6 +2164,58 @@ lv_label_set_text(st_title, "Settings");
 
   #undef MAKE_ROW
 
+
+  // ── RESET CONFIRM SCREEN ───────────────────────────────────────────────────
+  scr_reset = lv_obj_create(NULL);
+  lv_obj_set_style_bg_color(scr_reset, COL_SCREEN_BG, 0);
+  lv_obj_set_style_bg_opa(scr_reset, LV_OPA_COVER, 0);
+  create_status_bar(scr_reset);
+
+  reset_hdr = lv_obj_create(scr_reset);
+  lv_obj_set_size(reset_hdr, SCREEN_W, 46);
+  lv_obj_set_style_bg_color(reset_hdr, COL_HDR_SETTINGS_BG, 0);
+  lv_obj_set_style_border_width(reset_hdr, 0, 0);
+  lv_obj_align(reset_hdr, LV_ALIGN_TOP_LEFT, 0, 18);
+  lv_obj_set_style_pad_all(reset_hdr, 4, 0);
+
+  lv_obj_t *rt = lv_label_create(reset_hdr);
+  lv_label_set_text(rt, "Reset All");
+  lv_obj_set_style_text_color(rt, COL_HDR_SETTINGS_TEXT, 0);
+  lv_obj_set_style_text_font(rt, &lv_font_montserrat_14, 0);
+  lv_obj_align(rt, LV_ALIGN_LEFT_MID, 4, 0);
+
+  btn_reset_cancel = make_button(reset_hdr, LV_SYMBOL_LEFT " Back", COL_BACK_BTN_BG, cb_reset_cancel);
+  lv_obj_set_size(btn_reset_cancel, 80, 32);
+  lv_obj_align(btn_reset_cancel, LV_ALIGN_RIGHT_MID, -4, 0);
+
+  reset_box = lv_obj_create(scr_reset);
+  lv_obj_set_size(reset_box, SCREEN_W - 16, SCREEN_H - 46 - 16 - 18);
+  lv_obj_set_style_bg_color(reset_box, COL_PANEL_BG, 0);
+  lv_obj_set_style_border_color(reset_box, COL_BORDER, 0);
+  lv_obj_set_style_border_width(reset_box, 1, 0);
+  lv_obj_set_style_radius(reset_box, 10, 0);
+  lv_obj_align(reset_box, LV_ALIGN_TOP_MID, 0, 72);
+  lv_obj_set_style_pad_all(reset_box, 10, 0);
+
+  lbl_reset_body = lv_label_create(reset_box);
+  lv_label_set_text(lbl_reset_body,
+    "Reset All will clear saved settings\n"
+    "and restore compile-time defaults.\n\n"
+    "The device will reboot after reset.");
+  lv_label_set_long_mode(lbl_reset_body, LV_LABEL_LONG_WRAP);
+  lv_obj_set_width(lbl_reset_body, 200);   // adjust to fit inside reset_box
+  lv_obj_set_style_text_color(lbl_reset_body, COL_PANEL_TEXT, 0);
+  lv_obj_set_style_text_font(lbl_reset_body, &lv_font_montserrat_14, 0);
+  lv_obj_align(lbl_reset_body, LV_ALIGN_TOP_LEFT, 0, 0);
+
+  btn_reset_ok = make_button(reset_box, "OK - Reset", COL_WIFI_BTN, cb_reset_ok);
+  lv_obj_set_size(btn_reset_ok, 96, 34);
+  lv_obj_align(btn_reset_ok, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+
+  lv_obj_t *btn_cancel2 = make_button(reset_box, "Cancel", COL_BACK_BTN_BG, cb_reset_cancel);
+  lv_obj_set_size(btn_cancel2, 96, 34);
+  lv_obj_align(btn_cancel2, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
+
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1882,6 +2225,8 @@ void setup() {
   Serial.begin(115200);
   delay(50);
 
+
+  settings_load_prefs();
   rgb_init();
   rgb_boot_test();
   rgb_set(0, 0, 0);
@@ -1987,7 +2332,7 @@ void loop() {
       g_dimmed = true;
       bl_write(g_sleep_dim_pct);
     }
-  }
+}
 
   delay(5);
 }

@@ -2,8 +2,6 @@
 #define JC2432W328C_SCANNER_CONFIG_H
 
 // Default settings for JC2432W328C Scanner.
-// These are compile-time defaults. The Settings screen updates runtime values.
-
 #define CFG_BLE_SCAN_SECS     5      // seconds
 #define CFG_WIFI_SCAN_SECS    5      // seconds
 #define CFG_WIFI_MAX_RESULTS  20     // must be <= MAX_APS
@@ -11,6 +9,8 @@
 
 #define CFG_WIFI_SHOW_HIDDEN  true
 #define CFG_BLE_ACTIVE_SCAN   true
+
+#define CFG_RSSI_ABSOLUTE    false  // false: "-65 dBm", true: "65" (absolute)
 
 #define CFG_BRIGHTNESS_PCT    100    // 0-100
 #define CFG_SLEEP_TIMEOUT_S   0      // 0 = disabled
@@ -20,7 +20,7 @@
 #define CFG_RGB_BOOT_TEST     true   // flash R/G/B on boot
 #define CFG_RGB_BOOT_TEST_MS  320    // per color
 
-// Home screen title (shown next to the WiFi icon)
+// Home screen title (shown next to the WiFi icon).
 #define CFG_HOME_TITLE        "ESP32 Scanner"
 
 // ─────────────────────────────────────────────────────────────────────────────
