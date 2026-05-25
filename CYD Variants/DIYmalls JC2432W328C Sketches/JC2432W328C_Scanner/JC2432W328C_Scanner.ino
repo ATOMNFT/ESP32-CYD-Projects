@@ -51,6 +51,150 @@
 
 #include "config.h"  // Some settings chose to live here.
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Theme runtime colors
+// ─────────────────────────────────────────────────────────────────────────────
+static uint8_t g_theme_idx = (uint8_t)CFG_THEME_DEFAULT;
+
+// Runtime LVGL colors (set by theme_apply_palette)
+static lv_color_t COL_STATUS_BG;
+static lv_color_t COL_SCREEN_BG;
+static lv_color_t COL_BORDER;
+static lv_color_t COL_WIFI_BTN;
+static lv_color_t COL_BLE_BTN;
+static lv_color_t COL_HDR_WIFI_BG;
+static lv_color_t COL_HDR_BLE_BG;
+static lv_color_t COL_HDR_SETTINGS_BG;
+static lv_color_t COL_LIST_WIFI_EVEN;
+static lv_color_t COL_LIST_WIFI_ODD;
+static lv_color_t COL_LIST_BLE_EVEN;
+static lv_color_t COL_LIST_BLE_ODD;
+static lv_color_t COL_BTN_TEXT;
+static lv_color_t COL_TITLE_TEXT;
+static lv_color_t COL_SUBTITLE_TEXT;
+static lv_color_t COL_HDR_WIFI_TEXT;
+static lv_color_t COL_HDR_BLE_TEXT;
+static lv_color_t COL_HDR_SETTINGS_TEXT;
+static lv_color_t COL_LIST_TEXT;
+static lv_color_t COL_PANEL_BG;
+static lv_color_t COL_PANEL_TEXT;
+static lv_color_t COL_BACK_BTN_BG;
+static lv_color_t COL_SEL_BG;
+
+static void theme_apply_palette() {
+  switch (g_theme_idx) {
+    default:
+    case 0:
+      COL_STATUS_BG       = lv_color_hex(T0_STATUS_BG);
+      COL_SCREEN_BG       = lv_color_hex(T0_SCREEN_BG);
+      COL_BORDER          = lv_color_hex(T0_BORDER);
+      COL_WIFI_BTN        = lv_color_hex(T0_WIFI_BTN);
+      COL_BLE_BTN         = lv_color_hex(T0_BLE_BTN);
+      COL_HDR_WIFI_BG     = lv_color_hex(T0_HDR_WIFI_BG);
+      COL_HDR_BLE_BG      = lv_color_hex(T0_HDR_BLE_BG);
+      COL_HDR_SETTINGS_BG = lv_color_hex(T0_HDR_SETTINGS_BG);
+      COL_LIST_WIFI_EVEN  = lv_color_hex(T0_LIST_WIFI_EVEN);
+      COL_LIST_WIFI_ODD   = lv_color_hex(T0_LIST_WIFI_ODD);
+      COL_LIST_BLE_EVEN   = lv_color_hex(T0_LIST_BLE_EVEN);
+      COL_LIST_BLE_ODD    = lv_color_hex(T0_LIST_BLE_ODD);
+      COL_BTN_TEXT       = lv_color_hex(T0_BTN_TEXT);
+      COL_TITLE_TEXT     = lv_color_hex(T0_TITLE_TEXT);
+      COL_SUBTITLE_TEXT  = lv_color_hex(T0_SUBTITLE_TEXT);
+      COL_HDR_WIFI_TEXT  = lv_color_hex(T0_HDR_WIFI_TEXT);
+      COL_HDR_BLE_TEXT   = lv_color_hex(T0_HDR_BLE_TEXT);
+      COL_HDR_SETTINGS_TEXT = lv_color_hex(T0_HDR_SETTINGS_TEXT);
+      COL_LIST_TEXT       = lv_color_hex(T0_LIST_TEXT);
+      COL_PANEL_BG       = lv_color_hex(T0_PANEL_BG);
+      COL_PANEL_TEXT     = lv_color_hex(T0_PANEL_TEXT);
+      COL_BACK_BTN_BG    = lv_color_hex(T0_BACK_BTN_BG);
+      COL_SEL_BG        = lv_color_hex(T0_SEL_BG);
+break;
+    case 1:
+      COL_STATUS_BG       = lv_color_hex(T1_STATUS_BG);
+      COL_SCREEN_BG       = lv_color_hex(T1_SCREEN_BG);
+      COL_BORDER          = lv_color_hex(T1_BORDER);
+      COL_WIFI_BTN        = lv_color_hex(T1_WIFI_BTN);
+      COL_BLE_BTN         = lv_color_hex(T1_BLE_BTN);
+      COL_HDR_WIFI_BG     = lv_color_hex(T1_HDR_WIFI_BG);
+      COL_HDR_BLE_BG      = lv_color_hex(T1_HDR_BLE_BG);
+      COL_HDR_SETTINGS_BG = lv_color_hex(T1_HDR_SETTINGS_BG);
+      COL_LIST_WIFI_EVEN  = lv_color_hex(T1_LIST_WIFI_EVEN);
+      COL_LIST_WIFI_ODD   = lv_color_hex(T1_LIST_WIFI_ODD);
+      COL_LIST_BLE_EVEN   = lv_color_hex(T1_LIST_BLE_EVEN);
+      COL_LIST_BLE_ODD    = lv_color_hex(T1_LIST_BLE_ODD);
+      COL_BTN_TEXT       = lv_color_hex(T1_BTN_TEXT);
+      COL_TITLE_TEXT     = lv_color_hex(T1_TITLE_TEXT);
+      COL_SUBTITLE_TEXT  = lv_color_hex(T1_SUBTITLE_TEXT);
+      COL_HDR_WIFI_TEXT  = lv_color_hex(T1_HDR_WIFI_TEXT);
+      COL_HDR_BLE_TEXT   = lv_color_hex(T1_HDR_BLE_TEXT);
+      COL_HDR_SETTINGS_TEXT = lv_color_hex(T1_HDR_SETTINGS_TEXT);
+      COL_LIST_TEXT       = lv_color_hex(T1_LIST_TEXT);
+      COL_PANEL_BG       = lv_color_hex(T1_PANEL_BG);
+      COL_PANEL_TEXT     = lv_color_hex(T1_PANEL_TEXT);
+      COL_BACK_BTN_BG    = lv_color_hex(T1_BACK_BTN_BG);
+      COL_SEL_BG        = lv_color_hex(T1_SEL_BG);
+break;
+    case 2:
+      COL_STATUS_BG       = lv_color_hex(T2_STATUS_BG);
+      COL_SCREEN_BG       = lv_color_hex(T2_SCREEN_BG);
+      COL_BORDER          = lv_color_hex(T2_BORDER);
+      COL_WIFI_BTN        = lv_color_hex(T2_WIFI_BTN);
+      COL_BLE_BTN         = lv_color_hex(T2_BLE_BTN);
+      COL_HDR_WIFI_BG     = lv_color_hex(T2_HDR_WIFI_BG);
+      COL_HDR_BLE_BG      = lv_color_hex(T2_HDR_BLE_BG);
+      COL_HDR_SETTINGS_BG = lv_color_hex(T2_HDR_SETTINGS_BG);
+      COL_LIST_WIFI_EVEN  = lv_color_hex(T2_LIST_WIFI_EVEN);
+      COL_LIST_WIFI_ODD   = lv_color_hex(T2_LIST_WIFI_ODD);
+      COL_LIST_BLE_EVEN   = lv_color_hex(T2_LIST_BLE_EVEN);
+      COL_LIST_BLE_ODD    = lv_color_hex(T2_LIST_BLE_ODD);
+      COL_BTN_TEXT       = lv_color_hex(T2_BTN_TEXT);
+      COL_TITLE_TEXT     = lv_color_hex(T2_TITLE_TEXT);
+      COL_SUBTITLE_TEXT  = lv_color_hex(T2_SUBTITLE_TEXT);
+      COL_HDR_WIFI_TEXT  = lv_color_hex(T2_HDR_WIFI_TEXT);
+      COL_HDR_BLE_TEXT   = lv_color_hex(T2_HDR_BLE_TEXT);
+      COL_HDR_SETTINGS_TEXT = lv_color_hex(T2_HDR_SETTINGS_TEXT);
+      COL_LIST_TEXT       = lv_color_hex(T2_LIST_TEXT);
+      COL_PANEL_BG       = lv_color_hex(T2_PANEL_BG);
+      COL_PANEL_TEXT     = lv_color_hex(T2_PANEL_TEXT);
+      COL_BACK_BTN_BG    = lv_color_hex(T2_BACK_BTN_BG);
+      COL_SEL_BG        = lv_color_hex(T2_SEL_BG);
+break;
+  
+    case 3:
+      COL_STATUS_BG       = lv_color_hex(T3_STATUS_BG);
+      COL_SCREEN_BG       = lv_color_hex(T3_SCREEN_BG);
+      COL_BORDER          = lv_color_hex(T3_BORDER);
+      COL_WIFI_BTN        = lv_color_hex(T3_WIFI_BTN);
+      COL_BLE_BTN         = lv_color_hex(T3_BLE_BTN);
+      COL_HDR_WIFI_BG     = lv_color_hex(T3_HDR_WIFI_BG);
+      COL_HDR_BLE_BG      = lv_color_hex(T3_HDR_BLE_BG);
+      COL_HDR_SETTINGS_BG = lv_color_hex(T3_HDR_SETTINGS_BG);
+      COL_LIST_WIFI_EVEN  = lv_color_hex(T3_LIST_WIFI_EVEN);
+      COL_LIST_WIFI_ODD   = lv_color_hex(T3_LIST_WIFI_ODD);
+      COL_LIST_BLE_EVEN   = lv_color_hex(T3_LIST_BLE_EVEN);
+      COL_LIST_BLE_ODD    = lv_color_hex(T3_LIST_BLE_ODD);
+      COL_BTN_TEXT        = lv_color_hex(T3_BTN_TEXT);
+      COL_TITLE_TEXT      = lv_color_hex(T3_TITLE_TEXT);
+      COL_SUBTITLE_TEXT   = lv_color_hex(T3_SUBTITLE_TEXT);
+      COL_HDR_WIFI_TEXT   = lv_color_hex(T3_HDR_WIFI_TEXT);
+      COL_HDR_BLE_TEXT    = lv_color_hex(T3_HDR_BLE_TEXT);
+      COL_HDR_SETTINGS_TEXT = lv_color_hex(T3_HDR_SETTINGS_TEXT);
+      COL_LIST_TEXT       = lv_color_hex(T3_LIST_TEXT);
+      COL_PANEL_BG       = lv_color_hex(T3_PANEL_BG);
+      COL_PANEL_TEXT     = lv_color_hex(T3_PANEL_TEXT);
+      COL_BACK_BTN_BG    = lv_color_hex(T3_BACK_BTN_BG);
+      COL_SEL_BG        = lv_color_hex(T3_SEL_BG);
+break;
+}
+}
+
+static void theme_apply_to_ui();
+
+
+// (theme_apply_to_ui removed)
+
+
 // ─────────────────────────────────────────────────────────────────────────────
 // RGB LED
 // ─────────────────────────────────────────────────────────────────────────────
@@ -95,6 +239,25 @@ static void rgb_set(uint8_t r, uint8_t g, uint8_t b) {
   ledcWrite(LEDC_CH_R, rgb_fix(r));
   ledcWrite(LEDC_CH_G, rgb_fix(g));
   ledcWrite(LEDC_CH_B, rgb_fix(b));
+}
+
+static void rgb_boot_test() {
+#if defined(CFG_RGB_BOOT_TEST)
+  if (!CFG_RGB_BOOT_TEST) return;
+#endif
+  if (!g_rgb_enabled) return;
+
+  const uint16_t ms =
+#if defined(CFG_RGB_BOOT_TEST_MS)
+    (uint16_t)CFG_RGB_BOOT_TEST_MS;
+#else
+    120;
+#endif
+
+  rgb_set(255, 0, 0); delay(ms);
+  rgb_set(0, 255, 0); delay(ms);
+  rgb_set(0, 0, 255); delay(ms);
+  rgb_set(0, 0, 0);   delay(40);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -198,6 +361,30 @@ int      bleCount = 0;
 
 static BLEScan *gBleScan = nullptr; // cached BLE scan pointer
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Status bar + radio state
+// ─────────────────────────────────────────────────────────────────────────────
+enum RadioState : uint8_t { RADIO_IDLE=0, RADIO_WIFI_SCAN=1, RADIO_BLE_SCAN=2 };
+static volatile RadioState g_radio_state = RADIO_IDLE;
+
+static lv_obj_t *lbl_status_home = nullptr;
+static lv_obj_t *lbl_status_wifi = nullptr;
+static lv_obj_t *lbl_status_ble  = nullptr;
+static lv_obj_t *lbl_status_wifi_detail = nullptr;
+static lv_obj_t *lbl_status_ble_detail  = nullptr;
+static lv_obj_t *lbl_status_settings    = nullptr;
+
+static uint32_t g_boot_ms = 0;
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Scan request state machine (prevents running scans inside LVGL callbacks)
+// ─────────────────────────────────────────────────────────────────────────────
+enum ScanReq : uint8_t { REQ_NONE=0, REQ_WIFI=1, REQ_BLE=2 };
+static volatile ScanReq g_scan_req = REQ_NONE;
+static bool g_wifi_scanning = false;
+static bool g_ble_scanning  = false;
 // ── LVGL screens ─────────────────────────────────────────────────────────────
 static lv_obj_t *scr_home    = nullptr;
 static lv_obj_t *scr_wifi    = nullptr;
@@ -209,7 +396,35 @@ static lv_obj_t *lbl_wifi_status = nullptr;
 static lv_obj_t *lbl_ble_status  = nullptr;
 static lv_obj_t *list_wifi   = nullptr;
 static lv_obj_t *list_ble    = nullptr;
+
+static lv_obj_t *wifi_bar = nullptr;
+static lv_obj_t *ble_bar  = nullptr;
+static lv_obj_t *btn_wifi_home = nullptr;
+static lv_obj_t *btn_wifi_rescan = nullptr;
+static lv_obj_t *btn_ble_home = nullptr;
+static lv_obj_t *btn_ble_rescan = nullptr;
+// Theme-target UI objects (need globals so theme_apply_to_ui can recolor them)
+static lv_obj_t *wifi_hdr = nullptr;
+static lv_obj_t *ble_hdr  = nullptr;
+static lv_obj_t *st_hdr   = nullptr;
+static lv_obj_t *st_back = nullptr;
+static lv_obj_t *st_body = nullptr;
+static lv_obj_t *btn_wifi = nullptr;
+static lv_obj_t *btn_ble  = nullptr;
 static lv_obj_t *btn_settings = nullptr;
+static lv_obj_t *lbl_home_title = nullptr;
+static lv_obj_t *lbl_home_sub   = nullptr;
+static lv_obj_t *lbl_wifi_title = nullptr;
+static lv_obj_t *lbl_ble_title  = nullptr;
+static lv_obj_t *lbl_settings_title = nullptr;
+static lv_obj_t *wd_hdr = nullptr;
+static lv_obj_t *bd_hdr = nullptr;
+static lv_obj_t *wd_title = nullptr;
+static lv_obj_t *bd_title = nullptr;
+static lv_obj_t *wd_box = nullptr;
+static lv_obj_t *bd_box = nullptr;
+static lv_obj_t *wd_back = nullptr;
+static lv_obj_t *bd_back = nullptr;
 static lv_obj_t *slider_bright = nullptr;
 static lv_obj_t *slider_sleep  = nullptr; // (deprecated, replaced by dd_sleep)
 static lv_obj_t *dd_sleep        = nullptr;
@@ -220,49 +435,198 @@ static lv_obj_t *dd_ble_max     = nullptr;
 static lv_obj_t *sw_hidden      = nullptr;
 static lv_obj_t *sw_active      = nullptr;
 static lv_obj_t *sw_rgb         = nullptr;
+static lv_obj_t *dd_theme      = nullptr;
 static lv_obj_t *lbl_wifi_detail = nullptr;
 static lv_obj_t *lbl_ble_detail  = nullptr;
 
 
 // ── Selection tracking (clickable list items)
 static lv_obj_t *wifi_selected_item = nullptr;
+
+static int wifi_selected_idx = -1;
 static lv_obj_t *ble_selected_item  = nullptr;
+
+
+static int ble_selected_idx = -1;
+static void theme_apply_to_ui() {
+  theme_apply_palette();
+
+  // Status bar backgrounds (parent of each label)
+  if (lbl_status_home) lv_obj_set_style_bg_color(lv_obj_get_parent(lbl_status_home), COL_STATUS_BG, 0);
+  if (lbl_status_wifi) lv_obj_set_style_bg_color(lv_obj_get_parent(lbl_status_wifi), COL_STATUS_BG, 0);
+  if (lbl_status_ble)  lv_obj_set_style_bg_color(lv_obj_get_parent(lbl_status_ble),  COL_STATUS_BG, 0);
+  if (lbl_status_wifi_detail) lv_obj_set_style_bg_color(lv_obj_get_parent(lbl_status_wifi_detail), COL_STATUS_BG, 0);
+  if (lbl_status_ble_detail)  lv_obj_set_style_bg_color(lv_obj_get_parent(lbl_status_ble_detail),  COL_STATUS_BG, 0);
+  if (lbl_status_settings)    lv_obj_set_style_bg_color(lv_obj_get_parent(lbl_status_settings),    COL_STATUS_BG, 0);
+
+  // Screen backgrounds
+  if (scr_home) lv_obj_set_style_bg_color(scr_home, COL_SCREEN_BG, 0);
+  if (scr_wifi) lv_obj_set_style_bg_color(scr_wifi, COL_SCREEN_BG, 0);
+  if (scr_ble)  lv_obj_set_style_bg_color(scr_ble,  COL_SCREEN_BG, 0);
+  if (scr_settings) lv_obj_set_style_bg_color(scr_settings, COL_SCREEN_BG, 0);
+  if (scr_wifi_detail) lv_obj_set_style_bg_color(scr_wifi_detail, COL_SCREEN_BG, 0);
+  if (scr_ble_detail)  lv_obj_set_style_bg_color(scr_ble_detail,  COL_SCREEN_BG, 0);
+
+  // Home title/subtitle
+  if (lbl_home_title) lv_obj_set_style_text_color(lbl_home_title, COL_TITLE_TEXT, 0);
+  if (lbl_home_sub)   lv_obj_set_style_text_color(lbl_home_sub,   COL_SUBTITLE_TEXT, 0);
+
+  // Header titles
+  if (lbl_wifi_title) lv_obj_set_style_text_color(lbl_wifi_title, COL_HDR_WIFI_TEXT, 0);
+  if (lbl_ble_title)  lv_obj_set_style_text_color(lbl_ble_title,  COL_HDR_BLE_TEXT, 0);
+  if (lbl_settings_title) lv_obj_set_style_text_color(lbl_settings_title, COL_HDR_SETTINGS_TEXT, 0);
+
+  // Headers
+  if (wifi_hdr) lv_obj_set_style_bg_color(wifi_hdr, COL_HDR_WIFI_BG, 0);
+  if (ble_hdr)  lv_obj_set_style_bg_color(ble_hdr,  COL_HDR_BLE_BG, 0);
+  if (st_hdr)   lv_obj_set_style_bg_color(st_hdr,   COL_HDR_SETTINGS_BG, 0);
+
+  
+  
+  // Settings page (header + body container + controls)
+  if (st_hdr) lv_obj_set_style_bg_color(st_hdr, COL_HDR_SETTINGS_BG, 0);
+  if (lbl_settings_title) lv_obj_set_style_text_color(lbl_settings_title, COL_HDR_SETTINGS_TEXT, 0);
+
+  if (st_back) {
+    lv_obj_set_style_bg_color(st_back, COL_BACK_BTN_BG, 0);
+    lv_obj_set_style_border_color(st_back, COL_BORDER, 0);
+    lv_obj_t *lbl = lv_obj_get_child(st_back, 0);
+    if (lbl) lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
+  }
+
+  if (st_body) {
+    lv_obj_set_style_bg_color(st_body, COL_PANEL_BG, 0);
+    lv_obj_set_style_border_color(st_body, COL_BORDER, 0);
+  }
+
+  // Re-style settings controls (dropdowns/sliders/switches) if they exist
+  settings_style_dropdown(dd_ble_secs);
+  settings_style_dropdown(dd_wifi_secs);
+  settings_style_dropdown(dd_wifi_max);
+  settings_style_dropdown(dd_ble_max);
+  settings_style_dropdown(dd_theme);
+  settings_style_dropdown(dd_sleep);
+  settings_style_slider(slider_bright);
+  settings_style_switch(sw_hidden);
+  settings_style_switch(sw_active);
+  settings_style_switch(sw_rgb);
+
+// Detail pages (headers + panels + text)
+  if (wd_hdr) lv_obj_set_style_bg_color(wd_hdr, COL_HDR_WIFI_BG, 0);
+  if (bd_hdr) lv_obj_set_style_bg_color(bd_hdr, COL_HDR_BLE_BG, 0);
+  if (wd_title) lv_obj_set_style_text_color(wd_title, COL_HDR_WIFI_TEXT, 0);
+  if (bd_title) lv_obj_set_style_text_color(bd_title, COL_HDR_BLE_TEXT, 0);
+
+  if (wd_back) {
+    lv_obj_set_style_bg_color(wd_back, COL_BACK_BTN_BG, 0);
+    lv_obj_set_style_border_color(wd_back, COL_BORDER, 0);
+    lv_obj_t *lbl = lv_obj_get_child(wd_back, 0);
+    if (lbl) lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
+  }
+  if (bd_back) {
+    lv_obj_set_style_bg_color(bd_back, COL_BACK_BTN_BG, 0);
+    lv_obj_set_style_border_color(bd_back, COL_BORDER, 0);
+    lv_obj_t *lbl = lv_obj_get_child(bd_back, 0);
+    if (lbl) lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
+  }
+
+  if (wd_box) {
+    lv_obj_set_style_bg_color(wd_box, COL_PANEL_BG, 0);
+    lv_obj_set_style_border_color(wd_box, COL_BORDER, 0);
+  }
+  if (bd_box) {
+    lv_obj_set_style_bg_color(bd_box, COL_PANEL_BG, 0);
+    lv_obj_set_style_border_color(bd_box, COL_BORDER, 0);
+  }
+  if (lbl_wifi_detail) lv_obj_set_style_text_color(lbl_wifi_detail, COL_PANEL_TEXT, 0);
+  if (lbl_ble_detail)  lv_obj_set_style_text_color(lbl_ble_detail,  COL_PANEL_TEXT, 0);
+
+
+  // Results page bars (bottom Home/Rescan)
+  if (wifi_bar) lv_obj_set_style_bg_color(wifi_bar, COL_HDR_WIFI_BG, 0);
+  if (ble_bar)  lv_obj_set_style_bg_color(ble_bar,  COL_HDR_BLE_BG, 0);
+
+  if (btn_wifi_home) {
+    lv_obj_set_style_bg_color(btn_wifi_home, COL_BACK_BTN_BG, 0);
+    lv_obj_set_style_border_color(btn_wifi_home, COL_BORDER, 0);
+    lv_obj_t *lbl = lv_obj_get_child(btn_wifi_home, 0);
+    if (lbl) lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
+  }
+  if (btn_wifi_rescan) {
+    lv_obj_set_style_bg_color(btn_wifi_rescan, COL_WIFI_BTN, 0);
+    lv_obj_set_style_border_color(btn_wifi_rescan, COL_BORDER, 0);
+    lv_obj_t *lbl = lv_obj_get_child(btn_wifi_rescan, 0);
+    if (lbl) lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
+  }
+
+  if (btn_ble_home) {
+    lv_obj_set_style_bg_color(btn_ble_home, COL_BACK_BTN_BG, 0);
+    lv_obj_set_style_border_color(btn_ble_home, COL_BORDER, 0);
+    lv_obj_t *lbl = lv_obj_get_child(btn_ble_home, 0);
+    if (lbl) lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
+  }
+  if (btn_ble_rescan) {
+    lv_obj_set_style_bg_color(btn_ble_rescan, COL_BLE_BTN, 0);
+    lv_obj_set_style_border_color(btn_ble_rescan, COL_BORDER, 0);
+    lv_obj_t *lbl = lv_obj_get_child(btn_ble_rescan, 0);
+    if (lbl) lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
+  }
+
+// Home buttons (bg + border + label text)
+  if (btn_wifi) {
+    lv_obj_set_style_bg_color(btn_wifi, COL_WIFI_BTN, 0);
+    lv_obj_set_style_border_color(btn_wifi, COL_BORDER, 0);
+    lv_obj_t *lbl = lv_obj_get_child(btn_wifi, 0);
+    if (lbl) lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
+  }
+  if (btn_ble) {
+    lv_obj_set_style_bg_color(btn_ble, COL_BLE_BTN, 0);
+    lv_obj_set_style_border_color(btn_ble, COL_BORDER, 0);
+    lv_obj_t *lbl = lv_obj_get_child(btn_ble, 0);
+    if (lbl) lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
+  }
+  if (btn_settings) {
+    lv_obj_set_style_border_color(btn_settings, COL_BORDER, 0);
+    lv_obj_t *lbl = lv_obj_get_child(btn_settings, 0);
+    if (lbl) lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
+  }
+
+
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // BLE scan callback
 // ─────────────────────────────────────────────────────────────────────────────
 class ScanCallbacks : public BLEAdvertisedDeviceCallbacks {
   void onResult(BLEAdvertisedDevice dev) override {
     if (bleCount >= MAX_BLES) return;
-    String addr = dev.getAddress().toString().c_str();
-    ble_selected_item = nullptr;
-  int bleShow = bleCount;
-  if (bleShow > g_ble_max_results) bleShow = g_ble_max_results;
 
-  for (int i = 0; i < bleShow; i++) {
-      if (bleList[i].address == addr) return; // dedup
+    String addr = dev.getAddress().toString().c_str();
+
+    // Dedup by MAC
+    for (int i = 0; i < bleCount; i++) {
+      if (bleList[i].address == addr) return;
     }
+
     BLEEntry &e = bleList[bleCount++];
     e.address = addr;
     e.rssi    = dev.getRSSI();
     e.hasName = dev.haveName();
-    e.name    = e.hasName ? dev.getName().c_str() : "(unnamed)";
-  
-    // Service UUID count
-    e.svcCount = (uint8_t)dev.getServiceUUIDCount();
+    e.name    = e.hasName ? String(dev.getName().c_str()) : String("(unnamed)");
 
-    // Manufacturer data length
+    // Advertised info
+    e.svcCount = (uint8_t)dev.getServiceUUIDCount();
     {
       std::string md = dev.getManufacturerData();
       e.mfgLen = (uint16_t)md.length();
     }
-
-    // TX power (if available)
     e.hasTxPower = dev.haveTXPower();
-    e.txPower = e.hasTxPower ? (int8_t)dev.getTXPower() : (int8_t)0;
-}
+    e.txPower    = e.hasTxPower ? (int8_t)dev.getTXPower() : (int8_t)0;
+  }
 };
 
-static ScanCallbacks scanCB; // keep callback alive (global)
+static ScanCallbacks scanCB;
+ // keep callback alive (global)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // BLE heap management (no-PSRAM friendly)
@@ -442,6 +806,12 @@ static void wifi_hard_reset_sta() {
 // WiFi scan + populate list
 // ─────────────────────────────────────────────────────────────────────────────
 static void run_wifi_scan() {
+  g_wifi_scanning = true;
+  g_radio_state = RADIO_WIFI_SCAN;
+
+  status_bar_update_now();
+  lv_timer_handler();
+
   rgb_set(0, 255, 0); // Green = WiFi
 
   lv_label_set_text(lbl_wifi_status, "Scanning...");
@@ -495,14 +865,23 @@ static void run_wifi_scan() {
   wifi_selected_item = nullptr;
   for (int i = 0; i < apCount; i++) {
     lv_obj_t *item = lv_list_add_button(list_wifi, NULL, "");
+    // Themed row style (remove default white borders)
+    lv_obj_set_style_border_width(item, 0, 0);
+    lv_obj_set_style_outline_width(item, 0, 0);
+    lv_obj_set_style_bg_opa(item, LV_OPA_COVER, 0);
+    lv_obj_set_style_radius(item, 8, 0);
+    lv_obj_set_style_pad_all(item, 6, 0);
     lv_obj_add_event_cb(item, cb_wifi_item_select, LV_EVENT_CLICKED, (void*)(intptr_t)i);
     lv_obj_set_style_outline_width(item, 0, 0);
+    lv_obj_set_style_outline_pad(item, 0, 0);
+    lv_obj_set_style_outline_color(item, COL_BORDER, 0);
 
     lv_obj_set_style_bg_color(item,
-      i % 2 == 0 ? lv_color_hex(0x1a1a2e) : lv_color_hex(0x16213e), 0);
+      i % 2 == 0 ? COL_LIST_WIFI_EVEN : COL_LIST_WIFI_ODD, 0);
 
     lv_obj_t *lbl = lv_obj_get_child(item, 0);
 
+    lv_label_set_long_mode((lv_obj_t*)lbl, LV_LABEL_LONG_SCROLL_CIRCULAR);
     String ssid = apList[i].ssid.length() > 0 ? apList[i].ssid : "(hidden)";
     if (ssid.length() > 20) ssid = ssid.substring(0, 19) + "~";
 
@@ -515,20 +894,39 @@ static void run_wifi_scan() {
     );
 
     lv_label_set_text(lbl, row);
-    lv_obj_set_style_text_color(lbl, rssiColor(apList[i].rssi), 0);
+        lv_obj_set_style_text_color(lbl, COL_LIST_TEXT, 0);
     lv_obj_set_style_text_font(lbl, &lv_font_montserrat_14, 0);
   }
 
-  if (apCount == 0) lv_list_add_text(list_wifi, "No networks found");
+  if (apCount == 0) {
+    lv_obj_t *t = lv_list_add_text(list_wifi, "No networks found");
+    if (t) lv_obj_set_style_text_color(t, COL_LIST_TEXT, 0);
+  }
 
   Serial.printf("[WiFi] ---- Scan end: %d found ----\n", apCount);
+  g_radio_state = RADIO_IDLE;
+
+  status_bar_update_now();
+  lv_timer_handler();
   rgb_set(0, 40, 0); // dim green = done
+  g_wifi_scanning = false;
+  g_radio_state = RADIO_IDLE;
+  status_bar_update_now();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // BLE scan + populate list
 // ─────────────────────────────────────────────────────────────────────────────
 static void run_ble_scan() {
+  g_ble_scanning = true;
+  g_radio_state = RADIO_BLE_SCAN;
+
+  status_bar_update_now();
+  lv_timer_handler();
+
+  Serial.printf("\n[BLE] ---- Scan start ----\n");
+  Serial.printf("[BLE] secs=%u active=%d max=%u\n", (unsigned)g_ble_scan_secs, (int)g_ble_active_scan, (unsigned)g_ble_max_results);
+
   rgb_set(0, 0, 255); // Blue = BLE
 
   lv_label_set_text(lbl_ble_status, "Scanning 5s...");
@@ -550,6 +948,7 @@ static void run_ble_scan() {
 
   // Init BLE on-demand (and keep heap sane for WiFi)
   ble_init_if_needed();
+  Serial.printf("[BLE] init ok\n");
 
   bleCount = 0;
   if (!gBleScan) gBleScan = BLEDevice::getScan();
@@ -559,10 +958,13 @@ static void run_ble_scan() {
   pScan->setActiveScan(g_ble_active_scan);
   pScan->setInterval(100);
   pScan->setWindow(99);
-  pScan->start(g_ble_scan_secs, false); // blocking
+  uint8_t secs = g_ble_scan_secs; if (secs < 1) secs = 5;
+  pScan->start(secs, false); // blocking
   pScan->stop();
   delay(30);
   pScan->clearResults();
+
+  Serial.printf("[BLE] found=%d\n", bleCount);
 
   // Reclaim SPI bus for display
   tft.startWrite();
@@ -580,14 +982,23 @@ static void run_ble_scan() {
 
   for (int i = 0; i < bleCount; i++) {
     lv_obj_t *item = lv_list_add_button(list_ble, NULL, "");
+    // Themed row style (remove default white borders)
+    lv_obj_set_style_border_width(item, 0, 0);
+    lv_obj_set_style_outline_width(item, 0, 0);
+    lv_obj_set_style_bg_opa(item, LV_OPA_COVER, 0);
+    lv_obj_set_style_radius(item, 8, 0);
+    lv_obj_set_style_pad_all(item, 6, 0);
     // Make item selectable
     lv_obj_add_event_cb(item, cb_ble_item_select, LV_EVENT_CLICKED, (void*)(intptr_t)i);
     lv_obj_set_style_outline_width(item, 0, 0);
+    lv_obj_set_style_outline_pad(item, 0, 0);
+    lv_obj_set_style_outline_color(item, COL_BORDER, 0);
     lv_obj_set_style_bg_color(item,
-      i % 2 == 0 ? lv_color_hex(0x1a0a2e) : lv_color_hex(0x16082a), 0);
+      i % 2 == 0 ? COL_LIST_BLE_EVEN : COL_LIST_BLE_ODD, 0);
 
     lv_obj_t *lbl = lv_obj_get_child(item, 0);
 
+    lv_label_set_long_mode((lv_obj_t*)lbl, LV_LABEL_LONG_SCROLL_CIRCULAR);
     String nm = bleList[i].name;
     if (nm.length() > 18) nm = nm.substring(0, 17) + "~";
     String addr = bleList[i].address.substring(0, 11) + "..";
@@ -599,15 +1010,22 @@ static void run_ble_scan() {
       bleList[i].rssi
     );
     lv_label_set_text(lbl, row);
-    lv_obj_set_style_text_color(lbl, rssiColor(bleList[i].rssi), 0);
+        lv_obj_set_style_text_color(lbl, COL_LIST_TEXT, 0);
     lv_obj_set_style_text_font(lbl, &lv_font_montserrat_14, 0);
   }
 
   if (bleCount == 0) {
-    lv_list_add_text(list_ble, "No BLE devices found");
+    lv_obj_t *t = lv_list_add_text(list_ble, "No BLE devices found");
+    if (t) lv_obj_set_style_text_color(t, COL_LIST_TEXT, 0);
   }
 
-    rgb_set(0, 0, 40); // dim blue = done
+    g_radio_state = RADIO_IDLE;
+
+  status_bar_update_now();
+  lv_timer_handler();
+  rgb_set(0, 0, 40); // dim blue = done
+  Serial.printf("[BLE] ---- Scan end ----\n");
+  g_ble_scanning = false;
 
   // Note: keep BLE initialized so Rescan works reliably.
 }
@@ -628,19 +1046,27 @@ static void cb_wifi_item_select(lv_event_t *e) {
   lv_obj_t *item = (lv_obj_t *)lv_event_get_target(e);
   int idx = (int)(intptr_t)lv_event_get_user_data(e);
 
-  // Clear previous highlight
-  if (wifi_selected_item && wifi_selected_item != item) {
+  // Clear previous selection (restore even/odd row color)
+  if (wifi_selected_item && wifi_selected_item != item && wifi_selected_idx >= 0) {
     lv_obj_set_style_outline_width(wifi_selected_item, 0, 0);
-  }
-  wifi_selected_item = item;
+    lv_obj_set_style_outline_pad(wifi_selected_item, 0, 0);
 
-  // Highlight this item
+    lv_color_t restore = (wifi_selected_idx % 2 == 0) ? COL_LIST_WIFI_EVEN : COL_LIST_WIFI_ODD;
+    lv_obj_set_style_bg_color(wifi_selected_item, restore, 0);
+  }
+
+  // Apply selection highlight
+  wifi_selected_item = item;
+  wifi_selected_idx  = idx;
+
+  lv_obj_set_style_bg_color(item, COL_SEL_BG, 0);
+  lv_obj_set_style_outline_color(item, COL_BORDER, 0);
   lv_obj_set_style_outline_width(item, 2, 0);
-  lv_obj_set_style_outline_color(item, lv_color_hex(0x07FFFF), 0);
-  lv_obj_set_style_outline_opa(item, LV_OPA_COVER, 0);
-  // Open detail screen
+  lv_obj_set_style_outline_pad(item, 2, 0);
+
   show_wifi_detail(idx);
 }
+
 
 static void cb_ble_item_select(lv_event_t *e) {
   if (lv_event_get_code(e) != LV_EVENT_CLICKED) return;
@@ -648,20 +1074,26 @@ static void cb_ble_item_select(lv_event_t *e) {
   lv_obj_t *item = (lv_obj_t *)lv_event_get_target(e);
   int idx = (int)(intptr_t)lv_event_get_user_data(e);
 
-  if (ble_selected_item && ble_selected_item != item) {
+  // Clear previous selection (restore even/odd row color)
+  if (ble_selected_item && ble_selected_item != item && ble_selected_idx >= 0) {
     lv_obj_set_style_outline_width(ble_selected_item, 0, 0);
+    lv_obj_set_style_outline_pad(ble_selected_item, 0, 0);
+
+    lv_color_t restore = (ble_selected_idx % 2 == 0) ? COL_LIST_BLE_EVEN : COL_LIST_BLE_ODD;
+    lv_obj_set_style_bg_color(ble_selected_item, restore, 0);
   }
+
   ble_selected_item = item;
+  ble_selected_idx  = idx;
 
+  lv_obj_set_style_bg_color(item, COL_SEL_BG, 0);
+  lv_obj_set_style_outline_color(item, COL_BORDER, 0);
   lv_obj_set_style_outline_width(item, 2, 0);
-  lv_obj_set_style_outline_color(item, lv_color_hex(0xCC88FF), 0);
-  lv_obj_set_style_outline_opa(item, LV_OPA_COVER, 0);
-
-  if (idx >= 0 && idx < bleCount) {
-  }
+  lv_obj_set_style_outline_pad(item, 2, 0);
 
   show_ble_detail(idx);
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Detail screens: show selected item
@@ -740,30 +1172,68 @@ static void show_ble_detail(int idx) {
 // ─────────────────────────────────────────────────────────────────────────────
 static void cb_go_wifi(lv_event_t *e) {
   if (lv_event_get_code(e) != LV_EVENT_CLICKED) return;
+
+  // Update UI first, then perform scan from loop() (avoids LVGL re-entrancy)
   lv_screen_load(scr_wifi);
-  run_wifi_scan();
+  lv_label_set_text(lbl_wifi_status, "Scanning...");
+  lv_obj_clean(list_wifi);
+
+  g_radio_state = RADIO_WIFI_SCAN;
+  status_bar_update_now();
+  g_scan_req = REQ_WIFI;
 }
 
 static void cb_go_ble(lv_event_t *e) {
   if (lv_event_get_code(e) != LV_EVENT_CLICKED) return;
+
+  // Update UI first, then perform scan from loop() (avoids LVGL re-entrancy)
   lv_screen_load(scr_ble);
-  run_ble_scan();
+  lv_label_set_text(lbl_ble_status, "Scanning...");
+  lv_obj_clean(list_ble);
+
+  g_radio_state = RADIO_BLE_SCAN;
+  status_bar_update_now();
+  g_scan_req = REQ_BLE;
 }
 
 static void cb_back_home(lv_event_t *e) {
   if (lv_event_get_code(e) != LV_EVENT_CLICKED) return;
+
+  g_scan_req = REQ_NONE;
+  g_wifi_scanning = false;
+  g_ble_scanning  = false;
+
+  g_radio_state = RADIO_IDLE;
+  status_bar_update_now();
+
   rgb_set(0, 0, 0);
   lv_screen_load(scr_home);
 }
 
 static void cb_rescan_wifi(lv_event_t *e) {
   if (lv_event_get_code(e) != LV_EVENT_CLICKED) return;
-  run_wifi_scan();
+
+  // Update UI first, then perform scan from loop() (avoids LVGL re-entrancy)
+  lv_screen_load(scr_wifi);
+  lv_label_set_text(lbl_wifi_status, "Scanning...");
+  lv_obj_clean(list_wifi);
+
+  g_radio_state = RADIO_WIFI_SCAN;
+  status_bar_update_now();
+  g_scan_req = REQ_WIFI;
 }
 
 static void cb_rescan_ble(lv_event_t *e) {
   if (lv_event_get_code(e) != LV_EVENT_CLICKED) return;
-  run_ble_scan();
+
+  // Update UI first, then perform scan from loop() (avoids LVGL re-entrancy)
+  lv_screen_load(scr_ble);
+  lv_label_set_text(lbl_ble_status, "Scanning...");
+  lv_obj_clean(list_ble);
+
+  g_radio_state = RADIO_BLE_SCAN;
+  status_bar_update_now();
+  g_scan_req = REQ_BLE;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -781,6 +1251,13 @@ static void cb_settings_back(lv_event_t *e) {
 
 // Apply dropdown/switch/slider values into runtime vars
 static void cb_settings_apply(lv_event_t *e) {
+
+  // Theme dropdown
+  if (lv_event_get_target(e) == dd_theme) {
+    g_theme_idx = (uint8_t)lv_dropdown_get_selected(dd_theme);
+    theme_apply_to_ui();
+    return;
+  }
   (void)e;
 
   // BLE scan seconds (dropdown text like "3", "5", etc.)
@@ -866,13 +1343,13 @@ static lv_obj_t* make_button(lv_obj_t *parent, const char *label_text,
   lv_obj_set_style_bg_color(btn, bg, 0);
   lv_obj_set_style_bg_opa(btn, LV_OPA_COVER, 0);
   lv_obj_set_style_radius(btn, 10, 0);
-  lv_obj_set_style_border_color(btn, lv_color_hex(0x07FFFF), 0);
+  lv_obj_set_style_border_color(btn, COL_BORDER, 0);
   lv_obj_set_style_border_width(btn, 1, 0);
   lv_obj_add_event_cb(btn, cb, LV_EVENT_CLICKED, nullptr);
 
   lv_obj_t *lbl = lv_label_create(btn);
   lv_label_set_text(lbl, label_text);
-  lv_obj_set_style_text_color(lbl, lv_color_white(), 0);
+  lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
   lv_obj_center(lbl);
   return btn;
 }
@@ -880,76 +1357,166 @@ static lv_obj_t* make_button(lv_obj_t *parent, const char *label_text,
 // ─────────────────────────────────────────────────────────────────────────────
 // Build UI
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Status bar helpers
+// ─────────────────────────────────────────────────────────────────────────────
+static lv_obj_t* create_status_bar(lv_obj_t *parent) {
+  lv_obj_t *bar = lv_obj_create(parent);
+  lv_obj_set_size(bar, SCREEN_W, 18);
+  lv_obj_align(bar, LV_ALIGN_TOP_LEFT, 0, 0);
+
+  // Colored background (configurable)
+  lv_obj_set_style_bg_color(bar, COL_STATUS_BG, 0);
+  lv_obj_set_style_bg_opa(bar, LV_OPA_COVER, 0);
+  lv_obj_set_style_border_width(bar, 0, 0);
+
+  lv_obj_set_style_pad_left(bar, 6, 0);
+  lv_obj_set_style_pad_right(bar, 6, 0);
+  lv_obj_set_style_pad_top(bar, 1, 0);
+  lv_obj_set_style_pad_bottom(bar, 0, 0);
+
+  lv_obj_t *lbl = lv_label_create(bar);
+  lv_label_set_text(lbl, "IDLE");
+  lv_obj_set_style_text_font(lbl, &lv_font_montserrat_14, 0);
+  lv_obj_set_style_text_color(lbl, COL_BTN_TEXT, 0);
+  lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 0, 0);
+  return lbl;
+}
+
+static void status_bar_set_all(const char *txt) {
+  if (lbl_status_home) lv_label_set_text(lbl_status_home, txt);
+  if (lbl_status_wifi) lv_label_set_text(lbl_status_wifi, txt);
+  if (lbl_status_ble)  lv_label_set_text(lbl_status_ble,  txt);
+  if (lbl_status_wifi_detail) lv_label_set_text(lbl_status_wifi_detail, txt);
+  if (lbl_status_ble_detail)  lv_label_set_text(lbl_status_ble_detail,  txt);
+  if (lbl_status_settings)    lv_label_set_text(lbl_status_settings,    txt);
+}
+
+static void status_bar_update_now() {
+  const char *rs = "IDLE";
+  if (g_radio_state == RADIO_WIFI_SCAN) rs = "WIFI";
+  else if (g_radio_state == RADIO_BLE_SCAN) rs = "BLE";
+  status_bar_set_all(rs);
+}
+
+
+static void status_timer_cb(lv_timer_t *t) {
+  (void)t;
+
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Settings theming helpers
+// ─────────────────────────────────────────────────────────────────────────────
+static void settings_style_dropdown(lv_obj_t *dd) {
+  if (!dd) return;
+  lv_obj_set_style_bg_color(dd, COL_PANEL_BG, 0);
+  lv_obj_set_style_bg_opa(dd, LV_OPA_COVER, 0);
+  lv_obj_set_style_border_color(dd, COL_BORDER, 0);
+  lv_obj_set_style_border_width(dd, 1, 0);
+  lv_obj_set_style_radius(dd, 6, 0);
+  lv_obj_set_style_text_color(dd, COL_PANEL_TEXT, 0);
+}
+
+static void settings_style_slider(lv_obj_t *sl) {
+  if (!sl) return;
+  lv_obj_set_style_bg_color(sl, lv_color_hex(0x222222), LV_PART_MAIN);
+  lv_obj_set_style_bg_opa(sl, LV_OPA_COVER, LV_PART_MAIN);
+  lv_obj_set_style_bg_color(sl, COL_BORDER, LV_PART_INDICATOR);
+  lv_obj_set_style_bg_opa(sl, LV_OPA_COVER, LV_PART_INDICATOR);
+  lv_obj_set_style_radius(sl, 6, LV_PART_MAIN);
+  lv_obj_set_style_radius(sl, 6, LV_PART_INDICATOR);
+  lv_obj_set_style_border_width(sl, 0, LV_PART_MAIN);
+}
+
+static void settings_style_switch(lv_obj_t *sw) {
+  if (!sw) return;
+  // Off
+  lv_obj_set_style_bg_color(sw, lv_color_hex(0x222222), LV_PART_MAIN);
+  lv_obj_set_style_bg_opa(sw, LV_OPA_COVER, LV_PART_MAIN);
+  // On uses indicator
+  lv_obj_set_style_bg_color(sw, COL_BORDER, LV_PART_INDICATOR);
+  lv_obj_set_style_bg_opa(sw, LV_OPA_COVER, LV_PART_INDICATOR);
+}
+
 static void build_ui() {
-  lv_color_t bg_dark = lv_color_hex(0x0D0D1A);
+  lv_color_t bg_dark = COL_SCREEN_BG;
 
   // ── HOME SCREEN ──────────────────────────────────────────────────────────
   scr_home = lv_obj_create(NULL);
+  lbl_status_home = create_status_bar(scr_home);
+
   lv_obj_set_style_bg_color(scr_home, bg_dark, 0);
   lv_obj_set_style_bg_opa(scr_home, LV_OPA_COVER, 0);
 
   // Title
   lv_obj_t *title = lv_label_create(scr_home);
-  lv_label_set_text(title, LV_SYMBOL_WIFI "  ESP32 Scanner");
-  lv_obj_set_style_text_color(title, lv_color_hex(0x07FFFF), 0);
+  lbl_home_title = title;
+  lv_label_set_text(title, LV_SYMBOL_WIFI "  " CFG_HOME_TITLE);
+  lv_obj_set_style_text_color(title, COL_TITLE_TEXT, 0);
   lv_obj_set_style_text_font(title, &lv_font_montserrat_14, 0);
-  lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 18);
+  lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 26);
 
   // Divider
   lv_obj_t *line = lv_obj_create(scr_home);
   lv_obj_set_size(line, SCREEN_W - 20, 1);
   lv_obj_set_style_bg_color(line, lv_color_hex(0x07FFFF), 0);
-  lv_obj_align(line, LV_ALIGN_TOP_MID, 0, 44);
+  lv_obj_align(line, LV_ALIGN_TOP_MID, 0, 46);
 
   // Subtitle
   lv_obj_t *sub = lv_label_create(scr_home);
+  lbl_home_sub = sub;
   lv_label_set_text(sub, "Select a scan mode");
-  lv_obj_set_style_text_color(sub, lv_color_hex(0x8888AA), 0);
+  lv_obj_set_style_text_color(sub, COL_SUBTITLE_TEXT, 0);
   lv_obj_set_style_text_font(sub, &lv_font_montserrat_14, 0);
-  lv_obj_align(sub, LV_ALIGN_TOP_MID, 0, 56);
+  lv_obj_align(sub, LV_ALIGN_TOP_MID, 0, 64);
 
   // WiFi button
-  lv_obj_t *btn_wifi = make_button(scr_home,
+  btn_wifi = make_button(scr_home,
     LV_SYMBOL_WIFI "  WiFi Scan",
-    lv_color_hex(0x0F7A4A), cb_go_wifi);
-  lv_obj_set_size(btn_wifi, 200, 60);
-  lv_obj_align(btn_wifi, LV_ALIGN_CENTER, 0, -50);
+    COL_WIFI_BTN, cb_go_wifi);
+  lv_obj_set_size(btn_wifi, 170, 50);
+  lv_obj_align(btn_wifi, LV_ALIGN_CENTER, 0, -40);
 
   // BLE button
-  lv_obj_t *btn_ble = make_button(scr_home,
+  btn_ble = make_button(scr_home,
     LV_SYMBOL_BLUETOOTH "  BLE Scan",
-    lv_color_hex(0x1E3A8A), cb_go_ble);
-  lv_obj_set_size(btn_ble, 200, 60);
+    COL_BLE_BTN, cb_go_ble);
+  lv_obj_set_size(btn_ble, 170, 50);
   lv_obj_align(btn_ble, LV_ALIGN_CENTER, 0, 30);
 
   // Settings button (small) under BLE scan, right side
   btn_settings = make_button(scr_home, LV_SYMBOL_SETTINGS, lv_color_hex(0x222244), cb_open_settings);
   lv_obj_set_size(btn_settings, 60, 36);
-  lv_obj_align(btn_settings, LV_ALIGN_CENTER, 70, 94);
+  lv_obj_align(btn_settings, LV_ALIGN_CENTER, 56, 100);
 
   // Footer
   lv_obj_t *footer = lv_label_create(scr_home);
   lv_label_set_text(footer, "Created By ATOMNFT");
   lv_obj_set_style_text_color(footer, lv_color_hex(0x444466), 0);
   lv_obj_set_style_text_font(footer, &lv_font_montserrat_14, 0);
-  lv_obj_align(footer, LV_ALIGN_BOTTOM_MID, 0, -10);
+  lv_obj_align(footer, LV_ALIGN_BOTTOM_MID, 0, -8);
 
   // ── WIFI SCREEN ──────────────────────────────────────────────────────────
   scr_wifi = lv_obj_create(NULL);
+  lbl_status_wifi = create_status_bar(scr_wifi);
+
   lv_obj_set_style_bg_color(scr_wifi, bg_dark, 0);
   lv_obj_set_style_bg_opa(scr_wifi, LV_OPA_COVER, 0);
 
   // Header row
-  lv_obj_t *wifi_hdr = lv_obj_create(scr_wifi);
-  lv_obj_set_size(wifi_hdr, SCREEN_W, 46);
-  lv_obj_set_style_bg_color(wifi_hdr, lv_color_hex(0x001040), 0);
+  wifi_hdr = lv_obj_create(scr_wifi);
+lv_obj_set_size(wifi_hdr, SCREEN_W, 46);
+  lv_obj_set_style_bg_color(wifi_hdr, COL_HDR_WIFI_BG, 0);
   lv_obj_set_style_border_width(wifi_hdr, 0, 0);
-  lv_obj_align(wifi_hdr, LV_ALIGN_TOP_LEFT, 0, 0);
+  lv_obj_align(wifi_hdr, LV_ALIGN_TOP_LEFT, 0, 18);
   lv_obj_set_style_pad_all(wifi_hdr, 4, 0);
 
   lv_obj_t *wifi_title = lv_label_create(wifi_hdr);
+  lbl_wifi_title = wifi_title;
   lv_label_set_text(wifi_title, LV_SYMBOL_WIFI "  WiFi Networks");
-  lv_obj_set_style_text_color(wifi_title, lv_color_hex(0x07FFFF), 0);
+  lv_obj_set_style_text_color(wifi_title, COL_HDR_WIFI_TEXT, 0);
   lv_obj_set_style_text_font(wifi_title, &lv_font_montserrat_14, 0);
   lv_obj_align(wifi_title, LV_ALIGN_LEFT_MID, 4, 0);
 
@@ -962,45 +1529,48 @@ static void build_ui() {
 
   // Scrollable results list
   list_wifi = lv_list_create(scr_wifi);
-  lv_obj_set_size(list_wifi, SCREEN_W, SCREEN_H - 46 - 44);
-  lv_obj_align(list_wifi, LV_ALIGN_TOP_LEFT, 0, 46);
+  lv_obj_set_size(list_wifi, SCREEN_W, SCREEN_H - 46 - 44 - 18);
+  lv_obj_align(list_wifi, LV_ALIGN_TOP_LEFT, 0, 64);
   lv_obj_set_style_bg_color(list_wifi, bg_dark, 0);
   lv_obj_set_style_border_width(list_wifi, 0, 0);
   lv_obj_set_style_pad_row(list_wifi, 2, 0);
 
   // Bottom bar: Back + Rescan
-  lv_obj_t *wifi_bar = lv_obj_create(scr_wifi);
+  wifi_bar = lv_obj_create(scr_wifi);
   lv_obj_set_size(wifi_bar, SCREEN_W, 44);
   lv_obj_align(wifi_bar, LV_ALIGN_BOTTOM_LEFT, 0, 0);
-  lv_obj_set_style_bg_color(wifi_bar, lv_color_hex(0x001020), 0);
+  lv_obj_set_style_bg_color(wifi_bar, COL_HDR_WIFI_BG, 0);
   lv_obj_set_style_border_width(wifi_bar, 0, 0);
   lv_obj_set_style_pad_all(wifi_bar, 4, 0);
   lv_obj_set_flex_flow(wifi_bar, LV_FLEX_FLOW_ROW);
   lv_obj_set_flex_align(wifi_bar, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-  lv_obj_t *wb1 = make_button(wifi_bar, LV_SYMBOL_HOME "  Home",
-    lv_color_hex(0x222244), cb_back_home);
-  lv_obj_set_size(wb1, 100, 34);
+  btn_wifi_home = make_button(wifi_bar, LV_SYMBOL_HOME "  Home",
+    COL_BACK_BTN_BG, cb_back_home);
+  lv_obj_set_size(btn_wifi_home, 100, 34);
 
-  lv_obj_t *wb2 = make_button(wifi_bar, LV_SYMBOL_REFRESH "  Rescan",
-    lv_color_hex(0x003580), cb_rescan_wifi);
-  lv_obj_set_size(wb2, 100, 34);
+  btn_wifi_rescan = make_button(wifi_bar, LV_SYMBOL_REFRESH "  Rescan",
+    COL_WIFI_BTN, cb_rescan_wifi);
+  lv_obj_set_size(btn_wifi_rescan, 100, 34);
 
   // ── BLE SCREEN ───────────────────────────────────────────────────────────
   scr_ble = lv_obj_create(NULL);
+  lbl_status_ble = create_status_bar(scr_ble);
+
   lv_obj_set_style_bg_color(scr_ble, bg_dark, 0);
   lv_obj_set_style_bg_opa(scr_ble, LV_OPA_COVER, 0);
 
-  lv_obj_t *ble_hdr = lv_obj_create(scr_ble);
-  lv_obj_set_size(ble_hdr, SCREEN_W, 46);
-  lv_obj_set_style_bg_color(ble_hdr, lv_color_hex(0x180030), 0);
+  ble_hdr = lv_obj_create(scr_ble);
+lv_obj_set_size(ble_hdr, SCREEN_W, 46);
+  lv_obj_set_style_bg_color(ble_hdr, COL_HDR_BLE_BG, 0);
   lv_obj_set_style_border_width(ble_hdr, 0, 0);
-  lv_obj_align(ble_hdr, LV_ALIGN_TOP_LEFT, 0, 0);
+  lv_obj_align(ble_hdr, LV_ALIGN_TOP_LEFT, 0, 18);
   lv_obj_set_style_pad_all(ble_hdr, 4, 0);
 
   lv_obj_t *ble_title = lv_label_create(ble_hdr);
+  lbl_ble_title = ble_title;
   lv_label_set_text(ble_title, LV_SYMBOL_BLUETOOTH "  BLE Devices");
-  lv_obj_set_style_text_color(ble_title, lv_color_hex(0xCC88FF), 0);
+  lv_obj_set_style_text_color(ble_title, COL_HDR_BLE_TEXT, 0);
   lv_obj_set_style_text_font(ble_title, &lv_font_montserrat_14, 0);
   lv_obj_align(ble_title, LV_ALIGN_LEFT_MID, 4, 0);
 
@@ -1011,65 +1581,67 @@ static void build_ui() {
   lv_obj_align(lbl_ble_status, LV_ALIGN_RIGHT_MID, -4, 0);
 
   list_ble = lv_list_create(scr_ble);
-  lv_obj_set_size(list_ble, SCREEN_W, SCREEN_H - 46 - 44);
-  lv_obj_align(list_ble, LV_ALIGN_TOP_LEFT, 0, 46);
+  lv_obj_set_size(list_ble, SCREEN_W, SCREEN_H - 46 - 44 - 18);
+  lv_obj_align(list_ble, LV_ALIGN_TOP_LEFT, 0, 64);
   lv_obj_set_style_bg_color(list_ble, bg_dark, 0);
   lv_obj_set_style_border_width(list_ble, 0, 0);
   lv_obj_set_style_pad_row(list_ble, 2, 0);
 
-  lv_obj_t *ble_bar = lv_obj_create(scr_ble);
+  ble_bar = lv_obj_create(scr_ble);
   lv_obj_set_size(ble_bar, SCREEN_W, 44);
   lv_obj_align(ble_bar, LV_ALIGN_BOTTOM_LEFT, 0, 0);
-  lv_obj_set_style_bg_color(ble_bar, lv_color_hex(0x100020), 0);
+  lv_obj_set_style_bg_color(ble_bar, COL_HDR_BLE_BG, 0);
   lv_obj_set_style_border_width(ble_bar, 0, 0);
   lv_obj_set_style_pad_all(ble_bar, 4, 0);
   lv_obj_set_flex_flow(ble_bar, LV_FLEX_FLOW_ROW);
   lv_obj_set_flex_align(ble_bar, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-  lv_obj_t *bb1 = make_button(ble_bar, LV_SYMBOL_HOME "  Home",
-    lv_color_hex(0x222244), cb_back_home);
-  lv_obj_set_size(bb1, 100, 34);
+  btn_ble_home = make_button(ble_bar, LV_SYMBOL_HOME "  Home",
+    COL_BACK_BTN_BG, cb_back_home);
+  lv_obj_set_size(btn_ble_home, 100, 34);
 
-  lv_obj_t *bb2 = make_button(ble_bar, LV_SYMBOL_REFRESH "  Rescan",
-    lv_color_hex(0x500080), cb_rescan_ble);
-  lv_obj_set_size(bb2, 100, 34);
+  btn_ble_rescan = make_button(ble_bar, LV_SYMBOL_REFRESH "  Rescan",
+    COL_BLE_BTN, cb_rescan_ble);
+  lv_obj_set_size(btn_ble_rescan, 100, 34);
 
   // ── WIFI DETAIL SCREEN ─────────────────────────────────────────────────────
   scr_wifi_detail = lv_obj_create(NULL);
+  lbl_status_wifi_detail = create_status_bar(scr_wifi_detail);
+
   lv_obj_set_style_bg_color(scr_wifi_detail, bg_dark, 0);
   lv_obj_set_style_bg_opa(scr_wifi_detail, LV_OPA_COVER, 0);
 
-  lv_obj_t *wd_hdr = lv_obj_create(scr_wifi_detail);
+  wd_hdr = lv_obj_create(scr_wifi_detail);
   lv_obj_set_size(wd_hdr, SCREEN_W, 46);
-  lv_obj_set_style_bg_color(wd_hdr, lv_color_hex(0x001040), 0);
+  lv_obj_set_style_bg_color(wd_hdr, COL_HDR_WIFI_BG, 0);
   lv_obj_set_style_border_width(wd_hdr, 0, 0);
-  lv_obj_align(wd_hdr, LV_ALIGN_TOP_LEFT, 0, 0);
+  lv_obj_align(wd_hdr, LV_ALIGN_TOP_LEFT, 0, 18);
   lv_obj_set_style_pad_all(wd_hdr, 4, 0);
 
-  lv_obj_t *wd_title = lv_label_create(wd_hdr);
+  wd_title = lv_label_create(wd_hdr);
   lv_label_set_text(wd_title, "WiFi Details");
-  lv_obj_set_style_text_color(wd_title, lv_color_hex(0x07FFFF), 0);
+  lv_obj_set_style_text_color(wd_title, COL_HDR_WIFI_TEXT, 0);
   lv_obj_set_style_text_font(wd_title, &lv_font_montserrat_14, 0);
   lv_obj_align(wd_title, LV_ALIGN_LEFT_MID, 4, 0);
 
-  lv_obj_t *wd_back = make_button(wd_hdr, LV_SYMBOL_LEFT " Back", lv_color_hex(0x222244), cb_noop);
+  wd_back = make_button(wd_hdr, LV_SYMBOL_LEFT " Back", COL_BACK_BTN_BG, cb_noop);
   lv_obj_add_event_cb(wd_back, cb_detail_back, LV_EVENT_CLICKED, (void*)"wifi");
   lv_obj_set_size(wd_back, 80, 30);
   lv_obj_align(wd_back, LV_ALIGN_RIGHT_MID, -4, 0);
   lv_obj_set_user_data(wd_back, (void*)"wifi");
 
-  lv_obj_t *wd_box = lv_obj_create(scr_wifi_detail);
-  lv_obj_set_size(wd_box, SCREEN_W - 16, SCREEN_H - 46 - 16);
-  lv_obj_align(wd_box, LV_ALIGN_TOP_MID, 0, 54);
-  lv_obj_set_style_bg_color(wd_box, lv_color_hex(0x0D0D1A), 0);
-  lv_obj_set_style_border_color(wd_box, lv_color_hex(0x00FF66), 0);
+  wd_box = lv_obj_create(scr_wifi_detail);
+  lv_obj_set_size(wd_box, SCREEN_W - 16, SCREEN_H - 46 - 16 - 18);
+  lv_obj_align(wd_box, LV_ALIGN_TOP_MID, 0, 72);
+  lv_obj_set_style_bg_color(wd_box, COL_PANEL_BG, 0);
+  lv_obj_set_style_border_color(wd_box, COL_BORDER, 0);
   lv_obj_set_style_border_width(wd_box, 1, 0);
   lv_obj_set_style_radius(wd_box, 10, 0);
   lv_obj_set_style_pad_all(wd_box, 10, 0);
 
   lbl_wifi_detail = lv_label_create(wd_box);
   lv_label_set_text(lbl_wifi_detail, "");
-  lv_obj_set_style_text_color(lbl_wifi_detail, lv_color_white(), 0);
+  lv_obj_set_style_text_color(lbl_wifi_detail, COL_PANEL_TEXT, 0);
   lv_obj_set_style_text_font(lbl_wifi_detail, &lv_font_montserrat_14, 0);
   lv_label_set_long_mode(lbl_wifi_detail, LV_LABEL_LONG_WRAP);
   lv_obj_set_width(lbl_wifi_detail, SCREEN_W - 36);
@@ -1077,32 +1649,34 @@ static void build_ui() {
 
   // ── BLE DETAIL SCREEN ──────────────────────────────────────────────────────
   scr_ble_detail = lv_obj_create(NULL);
+  lbl_status_ble_detail = create_status_bar(scr_ble_detail);
+
   lv_obj_set_style_bg_color(scr_ble_detail, bg_dark, 0);
   lv_obj_set_style_bg_opa(scr_ble_detail, LV_OPA_COVER, 0);
 
-  lv_obj_t *bd_hdr = lv_obj_create(scr_ble_detail);
+  bd_hdr = lv_obj_create(scr_ble_detail);
   lv_obj_set_size(bd_hdr, SCREEN_W, 46);
-  lv_obj_set_style_bg_color(bd_hdr, lv_color_hex(0x180030), 0);
+  lv_obj_set_style_bg_color(bd_hdr, COL_HDR_BLE_BG, 0);
   lv_obj_set_style_border_width(bd_hdr, 0, 0);
-  lv_obj_align(bd_hdr, LV_ALIGN_TOP_LEFT, 0, 0);
+  lv_obj_align(bd_hdr, LV_ALIGN_TOP_LEFT, 0, 18);
   lv_obj_set_style_pad_all(bd_hdr, 4, 0);
 
-  lv_obj_t *bd_title = lv_label_create(bd_hdr);
+  bd_title = lv_label_create(bd_hdr);
   lv_label_set_text(bd_title, "BLE Details");
-  lv_obj_set_style_text_color(bd_title, lv_color_hex(0xCC88FF), 0);
+  lv_obj_set_style_text_color(bd_title, COL_HDR_BLE_TEXT, 0);
   lv_obj_set_style_text_font(bd_title, &lv_font_montserrat_14, 0);
   lv_obj_align(bd_title, LV_ALIGN_LEFT_MID, 4, 0);
 
-  lv_obj_t *bd_back = make_button(bd_hdr, LV_SYMBOL_LEFT " Back", lv_color_hex(0x222244), cb_noop);
+  bd_back = make_button(bd_hdr, LV_SYMBOL_LEFT " Back", COL_BACK_BTN_BG, cb_noop);
   lv_obj_add_event_cb(bd_back, cb_detail_back, LV_EVENT_CLICKED, (void*)"ble");
   lv_obj_set_size(bd_back, 80, 30);
   lv_obj_align(bd_back, LV_ALIGN_RIGHT_MID, -4, 0);
   lv_obj_set_user_data(bd_back, (void*)"ble");
 
-  lv_obj_t *bd_box = lv_obj_create(scr_ble_detail);
-  lv_obj_set_size(bd_box, SCREEN_W - 16, SCREEN_H - 46 - 16);
-  lv_obj_align(bd_box, LV_ALIGN_TOP_MID, 0, 54);
-  lv_obj_set_style_bg_color(bd_box, lv_color_hex(0x0D0D1A), 0);
+  bd_box = lv_obj_create(scr_ble_detail);
+  lv_obj_set_size(bd_box, SCREEN_W - 16, SCREEN_H - 46 - 16 - 18);
+  lv_obj_align(bd_box, LV_ALIGN_TOP_MID, 0, 72);
+  lv_obj_set_style_bg_color(bd_box, COL_PANEL_BG, 0);
   lv_obj_set_style_border_color(bd_box, lv_color_hex(0x1E90FF), 0);
   lv_obj_set_style_border_width(bd_box, 1, 0);
   lv_obj_set_style_radius(bd_box, 10, 0);
@@ -1110,7 +1684,7 @@ static void build_ui() {
 
   lbl_ble_detail = lv_label_create(bd_box);
   lv_label_set_text(lbl_ble_detail, "");
-  lv_obj_set_style_text_color(lbl_ble_detail, lv_color_white(), 0);
+  lv_obj_set_style_text_color(lbl_ble_detail, COL_PANEL_TEXT, 0);
   lv_obj_set_style_text_font(lbl_ble_detail, &lv_font_montserrat_14, 0);
   lv_label_set_long_mode(lbl_ble_detail, LV_LABEL_LONG_WRAP);
   lv_obj_set_width(lbl_ble_detail, SCREEN_W - 36);
@@ -1118,33 +1692,37 @@ static void build_ui() {
 
   // ── SETTINGS SCREEN ────────────────────────────────────────────────────────
   scr_settings = lv_obj_create(NULL);
+  lbl_status_settings = create_status_bar(scr_settings);
+
   lv_obj_set_style_bg_color(scr_settings, bg_dark, 0);
   lv_obj_set_style_bg_opa(scr_settings, LV_OPA_COVER, 0);
 
   // Header
-  lv_obj_t *st_hdr = lv_obj_create(scr_settings);
-  lv_obj_set_size(st_hdr, SCREEN_W, 46);
-  lv_obj_set_style_bg_color(st_hdr, lv_color_hex(0x101020), 0);
+  st_hdr = lv_obj_create(scr_settings);
+lv_obj_set_size(st_hdr, SCREEN_W, 46);
+  lv_obj_set_style_bg_color(st_hdr, COL_HDR_SETTINGS_BG, 0);
   lv_obj_set_style_border_width(st_hdr, 0, 0);
-  lv_obj_align(st_hdr, LV_ALIGN_TOP_LEFT, 0, 0);
+  lv_obj_align(st_hdr, LV_ALIGN_TOP_LEFT, 0, 18);
   lv_obj_set_style_pad_all(st_hdr, 4, 0);
 
   lv_obj_t *st_title = lv_label_create(st_hdr);
-  lv_label_set_text(st_title, "Settings");
-  lv_obj_set_style_text_color(st_title, lv_color_hex(0xAABBCC), 0);
+  lbl_settings_title = st_title;
+lv_label_set_text(st_title, "Settings");
+  lv_obj_set_style_text_color(st_title, COL_HDR_SETTINGS_TEXT, 0);
   lv_obj_set_style_text_font(st_title, &lv_font_montserrat_14, 0);
   lv_obj_align(st_title, LV_ALIGN_LEFT_MID, 4, 0);
 
-  lv_obj_t *st_back = make_button(st_hdr, LV_SYMBOL_LEFT " Back", lv_color_hex(0x222244), cb_settings_back);
+  st_back = make_button(st_hdr, LV_SYMBOL_LEFT " Back", COL_BACK_BTN_BG, cb_settings_back);
   lv_obj_set_size(st_back, 80, 30);
   lv_obj_align(st_back, LV_ALIGN_RIGHT_MID, -4, 0);
 
   // Body container
-  lv_obj_t *st = lv_obj_create(scr_settings);
-  lv_obj_set_size(st, SCREEN_W - 16, SCREEN_H - 46 - 16);
-  lv_obj_align(st, LV_ALIGN_TOP_MID, 0, 54);
-  lv_obj_set_style_bg_color(st, bg_dark, 0);
-  lv_obj_set_style_border_color(st, lv_color_hex(0x2a2a44), 0);
+  st_body = lv_obj_create(scr_settings);
+  lv_obj_t *st = st_body;
+  lv_obj_set_size(st, SCREEN_W - 16, SCREEN_H - 46 - 16 - 18);
+  lv_obj_align(st, LV_ALIGN_TOP_MID, 0, 72);
+  lv_obj_set_style_bg_color(st, COL_PANEL_BG, 0);
+  lv_obj_set_style_border_color(st, COL_BORDER, 0);
   lv_obj_set_style_border_width(st, 1, 0);
   lv_obj_set_style_radius(st, 10, 0);
   lv_obj_set_style_pad_all(st, 10, 0);
@@ -1162,13 +1740,14 @@ static void build_ui() {
     lv_obj_set_flex_align(_row, LV_FLEX_ALIGN_SPACE_BETWEEN, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER); \
     lv_obj_t *_row##_lab = lv_label_create(_row); \
     lv_label_set_text(_row##_lab, _label); \
-    lv_obj_set_style_text_color(_row##_lab, lv_color_hex(0xDDE6FF), 0); \
+    lv_obj_set_style_text_color(_row##_lab, COL_PANEL_TEXT, 0); \
     lv_obj_set_style_text_font(_row##_lab, &lv_font_montserrat_14, 0);
 
   // BLE scan seconds
   {
     MAKE_ROW("BLE Scan (sec)", row1);
     dd_ble_secs = lv_dropdown_create(row1);
+    settings_style_dropdown(dd_ble_secs);
     lv_dropdown_set_options(dd_ble_secs, "3\n5\n8\n10\n12\n15");
     // select based on current value (fallback to 5)
     int sel = 1;
@@ -1187,6 +1766,7 @@ static void build_ui() {
   {
     MAKE_ROW("WiFi Scan (sec)", row1b);
     dd_wifi_secs = lv_dropdown_create(row1b);
+    settings_style_dropdown(dd_wifi_secs);
     lv_dropdown_set_options(dd_wifi_secs, "3\n5\n8\n10\n12\n15");
     int sel = 1;
     if (g_wifi_scan_secs == 3) sel = 0;
@@ -1204,6 +1784,7 @@ static void build_ui() {
   {
     MAKE_ROW("WiFi Max", row2);
     dd_wifi_max = lv_dropdown_create(row2);
+    settings_style_dropdown(dd_wifi_max);
     lv_dropdown_set_options(dd_wifi_max, "10\n20");
     lv_dropdown_set_selected(dd_wifi_max, (g_wifi_max_results <= 10) ? 0 : 1);
     lv_obj_set_width(dd_wifi_max, 70);
@@ -1214,6 +1795,7 @@ static void build_ui() {
   {
     MAKE_ROW("BLE Max", row3);
     dd_ble_max = lv_dropdown_create(row3);
+    settings_style_dropdown(dd_ble_max);
     lv_dropdown_set_options(dd_ble_max, "10\n20");
     lv_dropdown_set_selected(dd_ble_max, (g_ble_max_results <= 10) ? 0 : 1);
     lv_obj_set_width(dd_ble_max, 70);
@@ -1224,6 +1806,7 @@ static void build_ui() {
   {
     MAKE_ROW("WiFi Hidden", row4);
     sw_hidden = lv_switch_create(row4);
+    settings_style_switch(sw_hidden);
     if (g_wifi_show_hidden) lv_obj_add_state(sw_hidden, LV_STATE_CHECKED);
     lv_obj_add_event_cb(sw_hidden, cb_settings_apply, LV_EVENT_VALUE_CHANGED, nullptr);
   }
@@ -1232,6 +1815,7 @@ static void build_ui() {
   {
     MAKE_ROW("BLE Active", row5);
     sw_active = lv_switch_create(row5);
+    settings_style_switch(sw_active);
     if (g_ble_active_scan) lv_obj_add_state(sw_active, LV_STATE_CHECKED);
     lv_obj_add_event_cb(sw_active, cb_settings_apply, LV_EVENT_VALUE_CHANGED, nullptr);
   }
@@ -1240,16 +1824,30 @@ static void build_ui() {
   {
     MAKE_ROW("Brightness", row6);
     slider_bright = lv_slider_create(row6);
+    settings_style_slider(slider_bright);
     lv_slider_set_range(slider_bright, 5, 100);
     lv_slider_set_value(slider_bright, g_brightness_pct, LV_ANIM_OFF);
     lv_obj_set_width(slider_bright, 120);
     lv_obj_add_event_cb(slider_bright, cb_settings_apply, LV_EVENT_VALUE_CHANGED, nullptr);
   }
 
+
+  // Theme (dropdown)
+  {
+    MAKE_ROW("Theme", row_theme);
+    dd_theme = lv_dropdown_create(row_theme);
+    settings_style_dropdown(dd_theme);
+    lv_dropdown_set_options(dd_theme, "Jungle\nCyber\nMidnight\nType-R");
+    lv_dropdown_set_selected(dd_theme, g_theme_idx);
+    lv_obj_set_width(dd_theme, 120);
+    lv_obj_add_event_cb(dd_theme, cb_settings_apply, LV_EVENT_VALUE_CHANGED, nullptr);
+  }
+
   // Sleep (presets)
   {
     MAKE_ROW("Sleep", row7);
     dd_sleep = lv_dropdown_create(row7);
+    settings_style_dropdown(dd_sleep);
     lv_dropdown_set_options(dd_sleep, "Off\n30\n60\n120\n300\n600");
 
     int sel = 0;
@@ -1268,6 +1866,7 @@ static void build_ui() {
   {
     MAKE_ROW("RGB LED", row8);
     sw_rgb = lv_switch_create(row8);
+    settings_style_switch(sw_rgb);
     if (g_rgb_enabled) lv_obj_add_state(sw_rgb, LV_STATE_CHECKED);
     lv_obj_add_event_cb(sw_rgb, cb_settings_apply, LV_EVENT_VALUE_CHANGED, nullptr);
   }
@@ -1284,11 +1883,16 @@ void setup() {
   delay(50);
 
   rgb_init();
+  rgb_boot_test();
   rgb_set(0, 0, 0);
 
   Serial.println("=== ESP32 Scanner — WiFi + BLE ===");
+  g_boot_ms = millis();
 
   lv_init();
+
+  // Theme colors
+  theme_apply_palette();
 
 
   // TFT + Touch init (required before LVGL flush can draw)
@@ -1343,7 +1947,12 @@ void setup() {
   // Init BLE stack once — must not be called again after this
 
   build_ui();
+  theme_apply_to_ui();
   lv_screen_load(scr_home);
+
+  // Status bar timer (updates system info)
+  lv_timer_create(status_timer_cb, 1000, nullptr);
+  status_timer_cb(nullptr);
 
   g_last_touch_ms = millis();
 
@@ -1361,6 +1970,15 @@ void loop() {
 
   lv_tick_inc(elapsed);
   lv_timer_handler();
+
+  // Run requested scans outside LVGL event callbacks
+  if (g_scan_req == REQ_WIFI && !g_wifi_scanning && !g_ble_scanning) {
+    g_scan_req = REQ_NONE;
+    run_wifi_scan();
+  } else if (g_scan_req == REQ_BLE && !g_wifi_scanning && !g_ble_scanning) {
+    g_scan_req = REQ_NONE;
+    run_ble_scan();
+  }
 
   // Sleep timeout handling: dim backlight after inactivity
   if (g_sleep_timeout_s > 0) {
